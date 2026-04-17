@@ -1,3 +1,20 @@
 spring:
-  application:
-    name: kashiapp
+  datasource:
+    url: jdbc:postgresql://db.tgitlfwgbaqtfrsggjvf.supabase.co:5432/postgres?sslmode=require
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    baseline-on-migrate: true
+    baseline-version: 1
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate # Como usas Flyway, es mejor 'validate' que 'update'
+    show-sql: true
+    open-in-view: false
