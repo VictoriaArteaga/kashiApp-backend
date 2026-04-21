@@ -18,3 +18,7 @@ spring:
       ddl-auto: validate # Como usas Flyway, es mejor 'validate' que 'update'
     show-sql: true
     open-in-view: false
+
+  jwt:
+    secret: miClaveSecretaSuperLargaParaJWT123456
+    expiration: 3600000 # 1 hora en milisegundos
