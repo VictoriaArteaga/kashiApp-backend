@@ -1,4 +1,4 @@
-package com.backend.kashiapp.user;
+package com.backend.kashiapp.model;
 
 import java.util.Optional;
 

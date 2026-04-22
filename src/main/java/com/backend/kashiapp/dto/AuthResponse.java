@@ -1,4 +1,4 @@
-package com.backend.kashiapp.auth;
+package com.backend.kashiapp.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

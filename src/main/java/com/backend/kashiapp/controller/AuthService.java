@@ -1,10 +1,12 @@
-package com.backend.kashiapp.auth;
+package com.backend.kashiapp.controller;
 
+import com.backend.kashiapp.dto.LoginRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.backend.kashiapp.config.JwtUtil;
-import com.backend.kashiapp.user.UserRepository;
+import com.backend.kashiapp.dto.AuthResponse;
+import com.backend.kashiapp.repository.UserRepository;
 
 @Service
 public class AuthService {

@@ -1,4 +1,4 @@
-package com.backend.kashiapp.user;
+package com.backend.kashiapp.model;
 
 import java.time.OffsetDateTime;
 
@@ -27,10 +27,10 @@ public class User {
     private String passwordHash;
 
     @Column(nullable=false, name="nombre_usuario")
-    private String nombreUsuario;
+    private String username;
 
     @Column(name= "creado_at")
-    private OffsetDateTime creadoAt;
+    private OffsetDateTime creationDate;
 
     @Enumerated(EnumType.STRING)
     @Column(length=20)
