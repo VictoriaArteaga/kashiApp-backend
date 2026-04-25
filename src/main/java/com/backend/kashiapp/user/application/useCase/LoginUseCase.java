@@ -1,22 +1,23 @@
-package com.backend.kashiapp.controller;
+package com.backend.kashiapp.user.application.useCase;
 
-import com.backend.kashiapp.dto.LoginRequest;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.backend.kashiapp.config.JwtUtil;
-import com.backend.kashiapp.dto.AuthResponse;
-import com.backend.kashiapp.repository.UserRepository;
+import com.backend.kashiapp.user.application.dto.AuthResponse;
+import com.backend.kashiapp.user.application.dto.LoginRequest;
+import com.backend.kashiapp.user.domain.repository.UserRepository;
+import com.backend.kashiapp.user.infraestructure.security.JwtService;
 
 @Service
-public class AuthService {
+public class LoginUseCase {
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
+    public LoginUseCase(UserRepository userRepository, JwtService jwtService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -28,7 +29,8 @@ public class AuthService {
             throw new RuntimeException("Contraseña incorrecta");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail());
         return new AuthResponse(token);
     }
 }
+

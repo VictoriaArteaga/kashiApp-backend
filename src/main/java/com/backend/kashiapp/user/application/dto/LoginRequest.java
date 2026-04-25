@@ -1,4 +1,4 @@
-package com.backend.kashiapp.dto;
+package com.backend.kashiapp.user.application.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
