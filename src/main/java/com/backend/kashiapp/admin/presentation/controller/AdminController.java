@@ -1,4 +1,4 @@
-package com.backend.kashiapp.administration.presentation.controller;
+package com.backend.kashiapp.admin.presentation.controller;
 
-public class AdministrationController {
+public class AdminController {
 }

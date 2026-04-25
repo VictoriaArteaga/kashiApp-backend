@@ -1,4 +1,4 @@
-package com.backend.kashiapp.administration.application.mapper;
+package com.backend.kashiapp.admin.application.mapper;
 
-public class AdministrationMapper {
+public class AdminMapper {
 }

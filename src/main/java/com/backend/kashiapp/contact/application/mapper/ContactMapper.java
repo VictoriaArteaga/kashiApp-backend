@@ -1,4 +1,4 @@
 package com.backend.kashiapp.contact.application.mapper;
 
-public class ContectMapper {
+public class ContactMapper {
 }

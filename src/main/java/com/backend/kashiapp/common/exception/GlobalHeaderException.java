@@ -1,4 +1,4 @@
 package com.backend.kashiapp.common.exception;
 
-public class GobalHeaderException {
+public class GlobalHeaderException {
 }

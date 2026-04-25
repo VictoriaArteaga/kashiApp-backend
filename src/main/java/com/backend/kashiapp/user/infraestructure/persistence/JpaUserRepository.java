@@ -1,4 +1,4 @@
-package com.backend.kashiapp.user.infraestructure;
+package com.backend.kashiapp.user.infraestructure.persistence;
 
 public class JpaUserRepository {
 }

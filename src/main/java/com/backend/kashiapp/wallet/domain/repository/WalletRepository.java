@@ -1,4 +1,4 @@
 package com.backend.kashiapp.wallet.domain.repository;
 
-public class WalletRepository {
+public interface WalletRepository {
 }

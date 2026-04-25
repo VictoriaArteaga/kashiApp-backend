@@ -1,4 +1,4 @@
 package com.backend.kashiapp.admin.domain.service;
 
-public class AdminService {
+public interface AdminService {
 }
