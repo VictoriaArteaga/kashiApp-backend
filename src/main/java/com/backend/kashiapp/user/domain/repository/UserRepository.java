@@ -1,12 +1,14 @@
 package com.backend.kashiapp.user.domain.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.UUID;
+
 import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 @Repository
+//interfaz que proporciona metodos para interacturar con la base de datos de usuarios
 public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     // Encontrar un usuario por su correo electrónico
