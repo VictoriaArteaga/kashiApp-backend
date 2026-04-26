@@ -3,7 +3,7 @@ package com.backend.kashiapp.user.application.useCase;
 import org.springframework.stereotype.Service;
 import com.backend.kashiapp.user.application.dto.UserRequestDTO;
 import com.backend.kashiapp.user.application.dto.UserResponseDTO;
-import com.backend.kashiapp.user.domain.models.User;
+import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
@@ -32,7 +32,7 @@ public class RegisterUserUseCase {
         }
 
         //creacion del usuario
-        var user = new User();
+        var user = new UserEntity();
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setUsername(request.getUsername()); 
