@@ -4,10 +4,12 @@ package com.backend.kashiapp.user.application.useCase;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.backend.kashiapp.user.application.dto.AuthResponse;
-import com.backend.kashiapp.user.application.dto.LoginRequest;
+import com.backend.kashiapp.user.application.dto.AuthResponseDTO;
+import com.backend.kashiapp.user.application.dto.LoginRequestDTO;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.user.infraestructure.security.JwtService;
+
+import com.backend.kashiapp.common.exception.UserNotFoundException;
 
 @Service
 public class LoginUseCase {
@@ -21,16 +23,16 @@ public class LoginUseCase {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public AuthResponse login(LoginRequest request) {
+    public AuthResponseDTO login(LoginRequestDTO request) {
         var user = userRepository.findByEmail(request.getEmail())
-        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Contraseña incorrecta");
+            throw new UserNotFoundException("Contraseña incorrecta");
         }
 
         String token = jwtService.generateToken(user.getEmail());
-        return new AuthResponse(token);
+        return new AuthResponseDTO(token);
     }
 }
 
