@@ -11,11 +11,12 @@ spring:
     password: ${DB_PASSWORD}
     baseline-on-migrate: true
     baseline-version: 1
+    enabled: false
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     show-sql: true
     open-in-view: false
   jwt:
