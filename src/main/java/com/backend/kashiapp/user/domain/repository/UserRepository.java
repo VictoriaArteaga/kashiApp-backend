@@ -14,6 +14,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     // Verificar si un correo electrónico ya está registrado
     boolean existsByEmail(String email);
+    //Verficar si un numero de telefono ya esta registrado
+    boolean existsByNumberPhone(String numberPhone);
     
 }
 

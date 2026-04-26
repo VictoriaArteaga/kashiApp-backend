@@ -35,7 +35,7 @@ public class User {
     @Column(name= "creado_at")
     private OffsetDateTime creationDate;
 
-    @Column(nullable=false, name="numero_telefono")
+    @Column(nullable=false, unique=true, name="numero_telefono")
     private String numberPhone;
 
     @Enumerated(EnumType.STRING)

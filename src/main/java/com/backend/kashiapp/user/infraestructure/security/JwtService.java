@@ -12,11 +12,13 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtService {
 
+    //Clave y tiempo de expiracion del token, inyectados desde el archivo de configuracion
     @Value("${jwt.secret}")
     private String SECRET_KEY;
     @Value("${jwt.expiration}")
     private long EXPIRATION_TIME;
 
+    //Metodo para generar un token JWT
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email) 
@@ -25,6 +27,7 @@ public class JwtService {
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
+    //Metodo para extraer el correo del usuario
     public String extractEmail(String token){
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))

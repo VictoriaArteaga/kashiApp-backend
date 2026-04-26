@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 
 import com.backend.kashiapp.common.exception.EmailAlreadyExistsException;
+import com.backend.kashiapp.common.exception.PhoneNumberAlreadyExistsException;
 
 @Service
 public class RegisterUserUseCase {
@@ -21,9 +22,13 @@ public class RegisterUserUseCase {
         this.passwordEncoder = passwordEncoder;
     }
     
+    //Metodo para registrar un nuevo usuario y validar que el correo electrónico no esté registrado previamente
     public UserResponseDTO register(UserRequestDTO request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("El correo electrónico ya está registrado");
+        }
+        if (userRepository.existsByNumberPhone(request.getNumberPhone())) {
+            throw new PhoneNumberAlreadyExistsException("El número de teléfono ya está registrado");
         }
 
         //creacion del usuario

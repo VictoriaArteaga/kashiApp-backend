@@ -23,6 +23,7 @@ public class LoginUseCase {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // Método que valida las credenciales del usuario y genera un token JWT si son correctas
     public AuthResponseDTO login(LoginRequestDTO request) {
         var user = userRepository.findByEmail(request.getEmail())
         .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
