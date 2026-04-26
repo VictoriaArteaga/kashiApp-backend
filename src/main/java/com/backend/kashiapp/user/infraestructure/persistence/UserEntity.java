@@ -41,4 +41,11 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     @Column(length=20, name="estado_cuenta")
     private AccountStatus accountStatus;
+
+    @Column(nullable=false, name="intentos_fallidos")
+    private Integer failedAttempts = 0;
+
+    @Column(name="bloqueado_hasta")
+    private OffsetDateTime lockedUntil;
+
 }
