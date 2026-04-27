@@ -4,9 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-// DTO para la solicitud de registro de usuario
 @Data
-public class UserRequestDTO {
+public class LoginRequestDTO {
 
     @Email
     @NotBlank
@@ -14,12 +13,5 @@ public class UserRequestDTO {
 
     @NotBlank
     private String password;
-
-    @NotBlank
-    private String username;
-
-    @NotBlank
-    private String numberPhone;
-
-
+    
 }
