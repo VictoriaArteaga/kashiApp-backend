@@ -48,4 +48,7 @@ public class UserEntity {
     @Column(name="bloqueado_hasta")
     private OffsetDateTime lockedUntil;
 
+    @Column(name="numero_identificacion", unique=true, nullable=false)
+    private String identificationNumber;
+
 }

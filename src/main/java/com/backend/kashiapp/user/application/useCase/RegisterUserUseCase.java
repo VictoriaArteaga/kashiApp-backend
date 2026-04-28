@@ -1,15 +1,17 @@
 package com.backend.kashiapp.user.application.useCase;
 
-import org.springframework.stereotype.Service;
-import com.backend.kashiapp.user.application.dto.UserRequestDTO;
-import com.backend.kashiapp.user.application.dto.UserResponseDTO;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
-import com.backend.kashiapp.user.domain.repository.UserRepository;
+import java.time.OffsetDateTime;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
+import org.springframework.stereotype.Service;
 
 import com.backend.kashiapp.common.exception.EmailAlreadyExistsException;
 import com.backend.kashiapp.common.exception.PhoneNumberAlreadyExistsException;
+import com.backend.kashiapp.user.application.dto.UserRequestDTO;
+import com.backend.kashiapp.user.application.dto.UserResponseDTO;
+import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
+import com.backend.kashiapp.user.domain.repository.UserRepository;
+import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
 @Service
 public class RegisterUserUseCase {
@@ -38,6 +40,9 @@ public class RegisterUserUseCase {
         user.setUsername(request.getUsername()); 
         user.setNumberPhone(request.getNumberPhone());
         user.setAccountStatus(AccountStatus.ACTIVE); 
+        user.setIdentificationNumber(request.getIdentificationNumber());
+        user.setCreationDate(OffsetDateTime.now());
+
 
         //guardar el usuario en la base de datos y capturar el usuario guardado para obtener su ID
 

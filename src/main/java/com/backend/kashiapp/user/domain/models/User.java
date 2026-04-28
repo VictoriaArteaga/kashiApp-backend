@@ -2,7 +2,9 @@ package com.backend.kashiapp.user.domain.models;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
+
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
+
 import lombok.Data;
 
 @Data
@@ -14,4 +16,7 @@ public class User {
     private OffsetDateTime creationDate;
     private String numberPhone;
     private AccountStatus accountStatus;
+    private Integer failedAttempts;
+    private OffsetDateTime lockedUntil;
+    private String identificationNumber;
 }
