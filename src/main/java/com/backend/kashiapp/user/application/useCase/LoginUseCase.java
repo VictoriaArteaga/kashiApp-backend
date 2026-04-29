@@ -54,7 +54,10 @@ public class LoginUseCase {
             throw new InvalidCredentialsException("Contraseña incorrecta");
         }
 
-        //Generar token OTP para 2FA
+        // Eliminar cualquier token OTP previo antes de generar uno nuevo
+        token2FARepository.deleteAllByUserId(user.getId());
+
+        // Generar token OTP para 2FA
         String otp = String.format("%06d", new java.util.Random().nextInt(999999));
 
         var tokenEntity = new com.backend.kashiapp.user.infraestructure.persistence.Token2FAEntity();
