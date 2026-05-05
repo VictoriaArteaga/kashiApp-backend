@@ -17,6 +17,8 @@ import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.user.infraestructure.security.EmailService;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class LoginUseCase {
     private final UserRepository userRepository;
@@ -31,6 +33,7 @@ public class LoginUseCase {
         this.emailService = emailService;
     }
 
+    @Transactional
     // Método que valida las credenciales del usuario y genera un token JWT si son correctas
     public AuthResponseDTO login(LoginRequestDTO request) {
         UserEntity user = userRepository.findByEmail(request.getEmail())
@@ -67,12 +70,11 @@ public class LoginUseCase {
 
         token2FARepository.save(tokenEntity);
 
-
-        // resetear intentos fallidos y desbloquear
+        // resetear intentos fallidos y desbloquear cuando el login es exitoso
         user.setFailedAttempts(0);
         user.setLockedUntil(null);
         userRepository.save(user);
-
+    
         //llamar al servicio de correo para enviar el OTP
         emailService.sendOptEmail(user.getEmail(), otp);
 
