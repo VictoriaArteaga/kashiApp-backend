@@ -8,11 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.kashiapp.user.application.dto.AuthResponseDTO;
 import com.backend.kashiapp.user.application.dto.LoginRequestDTO;
-import com.backend.kashiapp.user.application.dto.UserProfileResponseDTO;
 import com.backend.kashiapp.user.application.dto.UserRequestDTO;
 import com.backend.kashiapp.user.application.dto.UserResponseDTO;
 import com.backend.kashiapp.user.application.dto.VerifyOptRequestDTO;
-import com.backend.kashiapp.user.application.useCase.GetUserUseCase;
 import com.backend.kashiapp.user.application.useCase.LoginUseCase;
 import com.backend.kashiapp.user.application.useCase.RegisterUserUseCase;
 import com.backend.kashiapp.user.application.useCase.VerifyOptUseCase;
@@ -26,13 +24,11 @@ public class UserController {
     private final LoginUseCase loginUseCase;
     private final RegisterUserUseCase registerUserUseCase;
     private final VerifyOptUseCase verifyOptUseCase;
-    private final GetUserUseCase getUserUseCase;
 
-    public UserController(LoginUseCase loginUseCase, RegisterUserUseCase registerUserUseCase, VerifyOptUseCase verifyOptUseCase, GetUserUseCase getUserUseCase) {
+    public UserController(LoginUseCase loginUseCase, RegisterUserUseCase registerUserUseCase, VerifyOptUseCase verifyOptUseCase) {
         this.loginUseCase = loginUseCase;
         this.registerUserUseCase = registerUserUseCase;
         this.verifyOptUseCase = verifyOptUseCase;
-        this.getUserUseCase = getUserUseCase;
     }
 
     @PostMapping("/login")
@@ -52,10 +48,5 @@ public class UserController {
         AuthResponseDTO response = verifyOptUseCase.verifyOpt(request.getEmail(), request.getOtp());
         return ResponseEntity.ok(response);
     }
-
-    @PostMapping("/user/me")
-    public ResponseEntity<UserProfileResponseDTO> getCurrentUser() {
-        UserProfileResponseDTO response = getUserUseCase.getCurrentUserProfile("user@example.com");
-        return ResponseEntity.ok(response);
-    }
+    
 }
