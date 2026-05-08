@@ -34,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String email = jwtService.extractEmail(token);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, null);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (InvalidTokenException e) {
+            } catch (Exception e) {
                 // Si el token es inválido, simplemente no autenticamos al usuario
             }
         }

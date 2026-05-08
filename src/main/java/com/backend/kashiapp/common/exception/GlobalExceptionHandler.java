@@ -71,4 +71,14 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
+
+    @ExceptionHandler(AccountDeletedException.class)
+    public ResponseEntity<ErrorResponse> handleAccountDeleted(AccountDeletedException ex) {
+        ErrorResponse response = new ErrorResponse(
+            HttpStatus.GONE.value(), //gone es el status code adecuado para indicar que el recurso ya no está disponible
+            ex.getMessage(), //el mensaje de error se obtiene de la excepción personalizada
+            OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.GONE).body(response);
+    }
 }

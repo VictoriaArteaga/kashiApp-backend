@@ -1,6 +1,7 @@
 package com.backend.kashiapp.user.application.useCase;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.kashiapp.user.application.dto.AuthResponseDTO;
 import com.backend.kashiapp.user.domain.repository.Token2FARepository;
@@ -22,6 +23,7 @@ public class VerifyOptUseCase {
         this.jwtService = jwtService;
     }
 
+    @Transactional
     // Método que verifica el token OTP para un usuario dado su correo electrónico
     public AuthResponseDTO verifyOpt(String email, String otp) {
         // Buscar el usuario
