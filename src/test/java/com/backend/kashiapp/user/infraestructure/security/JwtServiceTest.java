@@ -12,8 +12,9 @@ class JwtServiceTest {
 
     private JwtService jwtService;
 
-    private final String SECRET = "12345678901234567890123456789012"; // 32 chars
-    private final long EXPIRATION = 1000 * 60 * 10; // 10 minutos
+    // Clave secreta de prueba.
+    private final String SECRET = "12345678901234567890123456789012";
+    private final long EXPIRATION = 1000 * 60 * 10;
 
     @BeforeEach
     void setup() {
@@ -28,20 +29,22 @@ class JwtServiceTest {
 
         String email = "test@test.com";
 
+        // Generar token y luego intenta extraer la información.
         String token = jwtService.generateToken(email);
-
         String extracted = jwtService.extractEmail(token);
 
+        // La información extraida debe ser identica a la original.
         assertEquals(email, extracted);
     }
 
     @Test
     void shouldFailIfTokenIsModified() {
 
+        // Crear un token valido y luego corromperlo.
         String token = jwtService.generateToken("test@test.com");
+        String fakeToken = token + "hack"; // Modifica la firma del contenido.
 
-        String fakeToken = token + "hack";
-
+        // Intenta usar un token modificado y se dispara una excepción de seguridad.
         assertThrows(Exception.class, () -> {
             jwtService.extractEmail(fakeToken);
         });
@@ -50,11 +53,15 @@ class JwtServiceTest {
     @Test
     void tokenShouldNotContainSensitiveData() {
 
+        // Generar un token normal.
+
         String token = jwtService.generateToken("test@test.com");
 
+        // Decodificación en Base64.
         String payload = new String(Base64.getDecoder()
                 .decode(token.split("\\.")[1]));
 
+        // Validar que no se filtre información critica en el cuerpo del JWT
         assertFalse(payload.contains("password"));
         assertFalse(payload.contains("otp"));
         assertFalse(payload.contains("123456"));
@@ -63,8 +70,10 @@ class JwtServiceTest {
     @Test
     void tokenShouldHaveExpiration() {
 
+        // Generar token con la configuración de tiempo.
         String token = jwtService.generateToken("test@test.com");
 
-        assertNotNull(token); // básico, pero confirma generación con expiración
+        // Verificar que el token no es nulo.
+        assertNotNull(token); // confirma generación con expiración
     }
 }

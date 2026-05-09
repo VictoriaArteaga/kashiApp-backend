@@ -59,8 +59,10 @@ class VerifyOptUseCaseTest {
         when(token2FARepository.findByUserId(userId)).thenReturn(Optional.of(token));
         when(jwtService.generateToken(EMAIL)).thenReturn("jwt-token");
 
+        // El usuario ingresa el código correcto.
         AuthResponseDTO response = verifyOptUseCase.verifyOpt(EMAIL, OTP);
 
+        // Se emite el JWT de acceso.
         assertEquals("jwt-token", response.getToken());
 
         verify(token2FARepository).delete(token); // OTP eliminado después de uso.
@@ -69,6 +71,7 @@ class VerifyOptUseCaseTest {
     @Test
     void shouldThrowExceptionWhenOtpIsIncorrect() {
 
+        // El token en DB es diferente al ingresado por el usuario.
         UUID userId = UUID.randomUUID();
 
         UserEntity user = new UserEntity();
@@ -95,6 +98,8 @@ class VerifyOptUseCaseTest {
     @Test
     void shouldThrowExceptionWhenOtpIsExpired() {
 
+        // El token existe, pero expiró
+
         UUID userId = UUID.randomUUID();
 
         UserEntity user = new UserEntity();
@@ -120,6 +125,8 @@ class VerifyOptUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenUserNotFound() {
+
+        // Simulación si el correo no esta registrado en el sistema.
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 

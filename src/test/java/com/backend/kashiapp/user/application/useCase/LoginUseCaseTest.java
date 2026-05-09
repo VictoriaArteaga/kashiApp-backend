@@ -67,17 +67,19 @@ class LoginUseCaseTest {
             loginUseCase.login(request);
         });
 
-        // Validaciones
+        // Validaciones = verificación de que los resultados coincidan con los esperados.
         assertEquals(5, user.getFailedAttempts());
         assertNotNull(user.getLockedUntil());
         assertTrue(user.getLockedUntil().isAfter(OffsetDateTime.now()));
 
+        // Se verifica que el estado del usuario se persistió en la db
         verify(userRepository, atLeastOnce()).save(user);
     }
 
     @Test
     void shouldThrowExceptionWhenAccountIsLocked() {
 
+        // Usuario con la cuenta bloqueada previamente.
         UserEntity user = new UserEntity();
         user.setEmail(EMAIL);
         user.setPasswordHash("hashed");
@@ -90,16 +92,19 @@ class LoginUseCaseTest {
         request.setEmail(EMAIL);
         request.setPassword(WRONG_PASSWORD);
 
+        // Al intertar loguearse con la cuenta bloqueada debe fallar de inmediato.
         assertThrows(AccountLockedException.class, () -> {
             loginUseCase.login(request);
         });
 
+        // No se realizan cambios en el repositorio si la cuenta ya estaba bloqueada.
         verify(userRepository, never()).save(any());
     }
 
     @Test
     void shouldResetAttemptsOnSuccessfulLogin() {
 
+        // Usuario con intentos fallidos acumulados.
         UserEntity user = new UserEntity();
         user.setEmail(EMAIL);
         user.setPasswordHash("hashed");
@@ -115,6 +120,7 @@ class LoginUseCaseTest {
 
         loginUseCase.login(request);
 
+        // El contandor de intentos se reinicia a 0.
         assertEquals(0, user.getFailedAttempts());
         assertNull(user.getLockedUntil());
 
