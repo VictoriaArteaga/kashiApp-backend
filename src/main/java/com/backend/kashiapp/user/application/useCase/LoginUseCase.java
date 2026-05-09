@@ -1,13 +1,10 @@
 package com.backend.kashiapp.user.application.useCase;
 
-
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.kashiapp.common.exception.AccountDeletedException;
@@ -19,76 +16,73 @@ import com.backend.kashiapp.user.application.dto.LoginRequestDTO;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.Token2FARepository;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
+import com.backend.kashiapp.user.infraestructure.persistence.Token2FAEntity;
 import com.backend.kashiapp.user.infraestructure.security.EmailService;
+
 @Service
 public class LoginUseCase {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final Token2FARepository token2FARepository;
     private final EmailService emailService;
+    private final FailedAttemptService failedAttemptService;
 
-    public LoginUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder, Token2FARepository token2FARepository, EmailService emailService) {
+    public LoginUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder,
+            Token2FARepository token2FARepository, EmailService emailService,
+            FailedAttemptService failedAttemptService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.token2FARepository = token2FARepository;
         this.emailService = emailService;
-    }
-
-    // Método privado para registrar intentos fallidos
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void recordFailedAttempt(UUID userId) {
-        // Recuperar el usuario fresh en la nueva transacción
-        UserEntity user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
-        
-        user.setFailedAttempts(user.getFailedAttempts() + 1);
-        if (user.getFailedAttempts() >= 5) {
-            user.setLockedUntil(OffsetDateTime.now().plus(Duration.ofMinutes(15)));
-        }
-        userRepository.save(user);
+        this.failedAttemptService = failedAttemptService;
     }
 
     @Transactional
-    // Método que valida las credenciales del usuario y genera un token JWT si son correctas
     public AuthResponseDTO login(LoginRequestDTO request) {
-        UserEntity user = userRepository.findByEmail(request.getEmail())
-        .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
-
-        // Verificar si la cuenta está bloqueada temporalmente
+        var user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+        // Verificar si la cuenta está bloqueada temporalmente por intentos fallidos
         if (user.getLockedUntil() != null && OffsetDateTime.now().isBefore(user.getLockedUntil())) {
             throw new AccountLockedException("Cuenta bloqueada temporalmente debido a múltiples intentos fallidos. Intente nuevamente más tarde.");
-        } else if (user.getAccountStatus() == AccountStatus.DELETED){
+        }
+        // Si el lock ya expiró, resetear los intentos para que el usuario recupere sus 5 intentos
+        if (user.getLockedUntil() != null && !OffsetDateTime.now().isBefore(user.getLockedUntil())) {
+            try {
+                failedAttemptService.resetFailedAttempts(user.getId());
+            } catch (Exception e) {
+        
+            }
+        }
+        // Verificar si la cuenta ha sido eliminada
+        if (user.getAccountStatus() == AccountStatus.DELETED) {
             throw new AccountDeletedException("La cuenta ha sido eliminada");
         }
-        
-        // Verificar la contraseña
+
+        // Validar la contraseña y registrar el intento fallido si es incorrecta
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            // Registrar intento fallido en transacción separada
-            recordFailedAttempt(user.getId());
-        
+            try {
+                failedAttemptService.recordFailedAttempt(user.getId());
+            } catch (Exception e) {
+                // Si falla el registro del intento, no debe afectar la respuesta al usuario
+            }
             throw new InvalidCredentialsException("Contraseña incorrecta");
         }
 
-        // Eliminar cualquier token OTP previo antes de generar uno nuevo
+        //eliminar cualquier token 2FA existente para el usuario antes de generar uno nuevo
         token2FARepository.deleteAllByUserId(user.getId());
 
-        // Generar token OTP para 2FA
         String otp = String.format("%06d", new java.util.Random().nextInt(999999));
 
-        var tokenEntity = new com.backend.kashiapp.user.infraestructure.persistence.Token2FAEntity();
+        // Crear una nueva entidad de token 2FA y guardarla en la base de datos
+        var tokenEntity = new Token2FAEntity();
         tokenEntity.setUser(user);
         tokenEntity.setToken(otp);
         tokenEntity.setExpirationTime(OffsetDateTime.now().plus(Duration.ofMinutes(10)));
-
         token2FARepository.save(tokenEntity);
 
-        // resetear intentos fallidos y desbloquear cuando el login es exitoso
-        user.setFailedAttempts(0);
-        user.setLockedUntil(null);
-        userRepository.save(user);
-    
-        //llamar al servicio de correo para enviar el OTP
+        //resetear los intentos fallidos después de un inicio de sesión exitoso
+        failedAttemptService.resetFailedAttempts(user.getId());
+
         emailService.sendOptEmail(user.getEmail(), otp);
 
         return new AuthResponseDTO("OTP enviado a tu correo electronico.");

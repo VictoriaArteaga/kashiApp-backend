@@ -2,6 +2,9 @@ package com.backend.kashiapp.common.exception;
 
 import java.time.OffsetDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,6 +14,8 @@ import com.backend.kashiapp.common.response.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
@@ -75,10 +80,32 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccountDeletedException.class)
     public ResponseEntity<ErrorResponse> handleAccountDeleted(AccountDeletedException ex) {
         ErrorResponse response = new ErrorResponse(
-            HttpStatus.GONE.value(), //gone es el status code adecuado para indicar que el recurso ya no está disponible
-            ex.getMessage(), //el mensaje de error se obtiene de la excepción personalizada
+            HttpStatus.GONE.value(),
+            ex.getMessage(),
             OffsetDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.GONE).body(response);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex) {
+        log.error("Error de integridad en base de datos", ex);
+        ErrorResponse response = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            "Operación no permitida por restricciones de datos.",
+            OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        log.error("Error interno no controlado", ex);
+        ErrorResponse response = new ErrorResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            "Ha ocurrido un error inesperado. Por favor intente nuevamente.",
+            OffsetDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }
