@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
+import com.backend.kashiapp.common.exception.UserNotFoundException;
 
 @Service
 public class BlockUserUseCase {
@@ -15,10 +16,11 @@ public class BlockUserUseCase {
     }
 
     public void blockUserByEmail(String email) {
-        userRepository.findByEmail(email).ifPresent(user -> {
-            user.setAccountStatus(AccountStatus.BLOCKED);
-            userRepository.save(user);
-        });
+        var user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+            
+        user.setAccountStatus(AccountStatus.BLOCKED);
+        userRepository.save(user);
     }
     
 }

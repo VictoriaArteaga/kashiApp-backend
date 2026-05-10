@@ -2,6 +2,7 @@ package com.backend.kashiapp.user.application.useCase;
 
 import org.springframework.stereotype.Service;
 
+import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.application.dto.UserProfileResponseDTO;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 
@@ -23,7 +24,7 @@ public class GetUserUseCase {
                         user.getAccountStatus(),
                         user.getCreationDate()
                 ))
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
     }
 
 }

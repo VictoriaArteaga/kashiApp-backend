@@ -26,6 +26,12 @@ public class DeleteUserUseCase {
     public DeleteResponseDTO deleteUser(DeleteRequestDTO deleteRequestDTO) {
         var user = userRepository.findByEmail(deleteRequestDTO.getEmail()). 
         orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+
+        //verificar que la cuenta no haya sido eliminada previamente
+        if (user.getAccountStatus() == AccountStatus.DELETED) {
+            throw new AccountDeletedException("La cuenta ya ha sido eliminada");
+        }
+
         //Validar contraseña
         if (passwordEncoder.matches(deleteRequestDTO.getPassword(), user.getPasswordHash())) {
             user.setAccountStatus(AccountStatus.DELETED);
@@ -34,11 +40,6 @@ public class DeleteUserUseCase {
             throw new InvalidCredentialsException("La contraseña es incorrecta");
         }
 
-        //verificar que la cuenta no haya sido eliminada previamente
-        if (user.getAccountStatus() == AccountStatus.DELETED) {
-            throw new AccountDeletedException("La cuenta ya ha sido eliminada");
-        }
-        
 
         //Logica para eliminar el usuario, actualizar el estado de cuenta a eliminado 
         return new DeleteResponseDTO("Cuenta eliminada exitosamente");
