@@ -1,13 +1,13 @@
 package com.backend.kashiapp.user.application.useCase;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.application.dto.AuthResponseDTO;
 import com.backend.kashiapp.user.domain.repository.Token2FARepository;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.user.infraestructure.security.JwtService;
-
-
 
 @Service
 public class VerifyOptUseCase {
@@ -22,12 +22,13 @@ public class VerifyOptUseCase {
         this.jwtService = jwtService;
     }
 
+    @Transactional
     // Método que verifica el token OTP para un usuario dado su correo electrónico
     public AuthResponseDTO verifyOpt(String email, String otp) {
         // Buscar el usuario
         var user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
-            throw new RuntimeException("Usuario no encontrado");
+            throw new UserNotFoundException("Usuario no encontrado");
         }
 
         //Buscar el token OTP

@@ -48,4 +48,5 @@ public class UserController {
         AuthResponseDTO response = verifyOptUseCase.verifyOpt(request.getEmail(), request.getOtp());
         return ResponseEntity.ok(response);
     }
+    
 }
