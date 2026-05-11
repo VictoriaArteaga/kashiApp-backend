@@ -23,10 +23,6 @@ spring:
           time_zone: UTC
     show-sql: true
     open-in-view: false
-    
-  jwt:
-    secret: ${JWT_SECRET}
-    expiration: ${JWT_EXPIRATION:3600000} 
 
   mail:
     host: smtp.gmail.com
@@ -39,4 +35,7 @@ spring:
           auth: true
           starttls:
             enable: true
-     
+
+jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION:3600000}

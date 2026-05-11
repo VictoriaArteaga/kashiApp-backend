@@ -17,12 +17,13 @@ import com.backend.kashiapp.user.application.dto.UserResponseDTO;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
-
+import com.backend.kashiapp.wallet.infraestructure.persistence.JpaWalletRepository;
 
 class RegisterUserUseCaseTest {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private RegisterUserUseCase registerUserUseCase;
+    private JpaWalletRepository jpaWalletRepository; 
 
     private final String EMAIL = "test@example.com";
     private final String PHONE = "2141242222";
@@ -32,7 +33,8 @@ class RegisterUserUseCaseTest {
     void setup() {
         userRepository = mock(UserRepository.class);
         passwordEncoder = mock(PasswordEncoder.class);
-        registerUserUseCase = new RegisterUserUseCase(userRepository, passwordEncoder);
+        jpaWalletRepository = mock(JpaWalletRepository.class);
+        registerUserUseCase = new RegisterUserUseCase(userRepository, passwordEncoder, jpaWalletRepository);
     }
 
     @Test
@@ -52,7 +54,7 @@ class RegisterUserUseCaseTest {
         when(passwordEncoder.encode(PASSWORD)).thenReturn("encryptedPassword");
         when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
         when(userRepository.existsByNumberPhone(PHONE)).thenReturn(false);
-
+        when(jpaWalletRepository.save(any())).thenReturn(null);
         UserRequestDTO request = new UserRequestDTO();
         request.setEmail(EMAIL);
         request.setPassword(PASSWORD);
