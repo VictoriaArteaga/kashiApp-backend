@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.kashiapp.common.exception.EmailAlreadyExistsException;
 import com.backend.kashiapp.common.exception.PhoneNumberAlreadyExistsException;
@@ -24,6 +25,7 @@ public class RegisterUserUseCase {
         this.passwordEncoder = passwordEncoder;
     }
     
+    @Transactional
     //Metodo para registrar un nuevo usuario y validar que el correo electrónico no esté registrado previamente
     public UserResponseDTO register(UserRequestDTO request) {
         if (userRepository.existsByEmail(request.getEmail())) {

@@ -1,22 +1,26 @@
 package com.backend.kashiapp.user.application.useCase;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.application.dto.AuthResponseDTO;
 import com.backend.kashiapp.user.domain.repository.Token2FARepository;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.user.infraestructure.persistence.Token2FAEntity;
 import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.user.infraestructure.security.JwtService;
-
 class VerifyOptUseCaseTest {
 
     private UserRepository userRepository;
@@ -130,7 +134,7 @@ class VerifyOptUseCaseTest {
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
-        Exception ex = assertThrows(RuntimeException.class, () -> {
+        Exception ex = assertThrows(UserNotFoundException.class, () -> {
             verifyOptUseCase.verifyOpt(EMAIL, OTP);
         });
 
