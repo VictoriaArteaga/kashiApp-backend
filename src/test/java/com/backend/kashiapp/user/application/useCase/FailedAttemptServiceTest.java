@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ class FailedAttemptServiceTest {
         //se registra un intento fallido
         failedAttemptService.recordFailedAttempt(USER_ID);
         assertEquals(3, user.getFailedAttempts());
-        assertNull(user.getLockedUntil());
+        assertNotNull(user.getLockedUntil());
         verify(userRepository).save(user);
     }
 
@@ -58,7 +58,7 @@ class FailedAttemptServiceTest {
         //se registra un intento fallido
         failedAttemptService.recordFailedAttempt(USER_ID);
         assertEquals(5, user.getFailedAttempts());
-        assertNull(user.getLockedUntil());
+        assertNotNull(user.getLockedUntil());
         assertTrue(user.getLockedUntil().isAfter(java.time.OffsetDateTime.now()));
         verify(userRepository).save(user);
     }

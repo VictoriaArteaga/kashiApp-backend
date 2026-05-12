@@ -3,10 +3,10 @@ package com.backend.kashiapp.user.application.useCase;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertThrows;
-import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -30,8 +30,9 @@ class DeleteUserUseCaseTest {
     private PasswordEncoder passwordEncoder;
     
     private final String EMAIL = "test@example.com";
-    private final String PASSWORD_HASH = "encryptedPassword";
+    private final String PASSWORD = "Password123";
     private final String WRONG_PASSWORD = "wrongPassword";
+    private final String PASSWORD_HASH = "hashedPassword";
 
     @BeforeEach
     void setup() {
@@ -44,16 +45,16 @@ class DeleteUserUseCaseTest {
     void shouldDeleteUserWithCorrectPassword() {
         UserEntity user = new UserEntity();
         user.setEmail(EMAIL);
-        user.setPasswordHash("PASSWORD_HASH");
+        user.setPasswordHash(PASSWORD_HASH);
         user.setAccountStatus(AccountStatus.ACTIVE);
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(PASSWORD_HASH, user.getPasswordHash())).thenReturn(true);
+        when(passwordEncoder.matches(PASSWORD, user.getPasswordHash())).thenReturn(true);
 
         //El usuario ingresa la contraseña correcta
         DeleteRequestDTO request = new DeleteRequestDTO();
         request.setEmail(EMAIL);
-        request.setPassword(PASSWORD_HASH);
+        request.setPassword(PASSWORD);
         
         //Se espera que el usuario sea eliminado
         DeleteResponseDTO response = deleteUserUseCase.deleteUser(request);
@@ -68,7 +69,7 @@ class DeleteUserUseCaseTest {
     void shouldThrowExceptionWithWrongPassword() {
         UserEntity user = new UserEntity();
         user.setEmail(EMAIL);
-        user.setPasswordHash("PASSWORD_HASH");
+        user.setPasswordHash(PASSWORD_HASH);
         user.setAccountStatus(AccountStatus.ACTIVE);
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
@@ -82,7 +83,7 @@ class DeleteUserUseCaseTest {
         //Se espera que se lance una excepción de credenciales inválidas
         Exception ex = assertThrows(InvalidCredentialsException.class, () -> deleteUserUseCase.deleteUser(request));
         assertEquals(AccountStatus.ACTIVE, user.getAccountStatus()); // Estado de cuenta: activo
-        assertEquals(ex.getMessage(), "La contraseña es incorrecta");
+        assertEquals("La contraseña es incorrecta", ex.getMessage());
         verify(userRepository, never()).save(user); // Verificar que no se haya guardado el usuario
     }
 
@@ -90,7 +91,7 @@ class DeleteUserUseCaseTest {
     void shouldThrowExceptionWhenAccountAlreadyDeleted() {
         UserEntity user = new UserEntity();
         user.setEmail(EMAIL);
-        user.setPasswordHash("PASSWORD_HASH");
+        user.setPasswordHash(PASSWORD_HASH);
         user.setAccountStatus(AccountStatus.DELETED);
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
@@ -98,12 +99,12 @@ class DeleteUserUseCaseTest {
         //El usuario intenta eliminar una cuenta que ya ha sido eliminada
         DeleteRequestDTO request = new DeleteRequestDTO();
         request.setEmail(EMAIL);
-        request.setPassword(PASSWORD_HASH);
+        request.setPassword(PASSWORD);
 
         //Se espera que se lance una excepción de cuenta eliminada
         Exception ex = assertThrows(AccountDeletedException.class, () -> deleteUserUseCase.deleteUser(request));
         assertEquals(AccountStatus.DELETED, user.getAccountStatus()); // Estado de cuenta: eliminado
-        assertEquals(ex.getMessage(), "La cuenta ya ha sido eliminada");
+        assertEquals("La cuenta ya ha sido eliminada", ex.getMessage());
         verify(userRepository, never()).save(any()); // Verificar que no se guarde ningún usuario
     }
 
@@ -114,11 +115,11 @@ class DeleteUserUseCaseTest {
         //El usuario intenta eliminar una cuenta que no existe
         DeleteRequestDTO request = new DeleteRequestDTO();
         request.setEmail(EMAIL);
-        request.setPassword(PASSWORD_HASH);
+        request.setPassword(PASSWORD);
 
         //Se espera que se lance una excepción de usuario no encontrado
         Exception ex = assertThrows(UserNotFoundException.class, () -> deleteUserUseCase.deleteUser(request));
-        assertEquals(ex.getMessage(), "Usuario no encontrado");
+        assertEquals("Usuario no encontrado", ex.getMessage());
         verify(userRepository, never()).save(any()); // Verificar que no se haya guardado ningún usuario
 
     }
