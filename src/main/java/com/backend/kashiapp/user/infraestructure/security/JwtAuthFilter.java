@@ -1,9 +1,12 @@
 package com.backend.kashiapp.user.infraestructure.security;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,25 +25,32 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     //Metodo que verifica si cada JWT es válido y, si lo es, establece la autenticación
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         // Verificar si el encabezado de autorización está presente y comienza con "Bearer" porque es el formato estándar para tokens JWT
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        // Extraer el token JWT del encabezado de autorizacion
+        String token = authHeader.substring(7);
             try {
                 //extraer el email del token y establecer la autenticación en el contexto de seguridad de Spring
                 String email = jwtService.extractEmail(token);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, null);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, List.of());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+
             } catch (Exception e) {
-                // Si el token es inválido, simplemente no autenticamos al usuario
+                //Limpiar el contexto de seguridad
+                SecurityContextHolder.clearContext(); 
             }
-        }
-        // Continuar con la cadena de filtros que procesan la solicitud
         filterChain.doFilter(request, response);
+        
+        }
 
-    }
-    
-
-    
 }
+    

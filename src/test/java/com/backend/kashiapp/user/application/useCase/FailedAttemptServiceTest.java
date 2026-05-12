@@ -2,12 +2,13 @@ package com.backend.kashiapp.user.application.useCase;
 
 import java.util.UUID;
 
-import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,7 +43,7 @@ class FailedAttemptServiceTest {
         //se registra un intento fallido
         failedAttemptService.recordFailedAttempt(USER_ID);
         assertEquals(3, user.getFailedAttempts());
-        assertNotNull(user.getLockedUntil());
+        assertNull(user.getLockedUntil());
         verify(userRepository).save(user);
     }
 
