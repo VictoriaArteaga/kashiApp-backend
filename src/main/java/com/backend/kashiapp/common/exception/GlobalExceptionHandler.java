@@ -108,6 +108,17 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+    @ExceptionHandler(WalletNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleWalletNotFound(WalletNotFoundException ex) {
+    log.error("Wallet Error: {}", ex.getMessage());
+
+    ErrorResponse response = new ErrorResponse(
+        HttpStatus.NOT_FOUND.value(),
+        ex.getMessage(),
+        OffsetDateTime.now()
+    );
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+}
 
     @ExceptionHandler(InvalidTransactionAmountException.class)
     public ResponseEntity<ErrorResponse>
@@ -220,23 +231,4 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(WalletNotFoundException.class)
-    public ResponseEntity<ErrorResponse>
-    handleWalletNotFound(
-            WalletNotFoundException ex
-    ) {
-
-        log.error("Wallet Error: {}", ex.getMessage());
-
-        ErrorResponse response =
-                new ErrorResponse(
-                        HttpStatus.NOT_FOUND.value(),
-                        ex.getMessage(),
-                        OffsetDateTime.now()
-                );
-
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(response);
-    }
 }
