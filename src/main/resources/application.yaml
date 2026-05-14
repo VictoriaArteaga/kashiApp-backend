@@ -11,7 +11,7 @@ spring:
     password: ${DB_PASSWORD}
     baseline-on-migrate: true
     baseline-version: 1
-    enabled: false
+    enabled: true
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
