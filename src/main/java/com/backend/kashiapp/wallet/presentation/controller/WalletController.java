@@ -4,13 +4,16 @@ package com.backend.kashiapp.wallet.presentation.controller;
 import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.common.response.ApiResponse;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
+import com.backend.kashiapp.wallet.application.dto.WalletResponseDTO;
+import com.backend.kashiapp.wallet.application.useCase.DepositMoneyUseCase;
 import com.backend.kashiapp.wallet.application.useCase.GetBalanceUseCase;
 import com.backend.kashiapp.wallet.application.useCase.ToggleVisibilityUseCase;
-import com.backend.kashiapp.wallet.application.dto.WalletResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -19,13 +22,30 @@ public class WalletController {
 
     private final GetBalanceUseCase getBalanceUseCase;
     private final ToggleVisibilityUseCase toggleVisibilityUseCase;
+    private final DepositMoneyUseCase depositMoneyUseCase;
     private final UserRepository userRepository;
 
     public WalletController(GetBalanceUseCase getBalanceUseCase,
-                            ToggleVisibilityUseCase toggleVisibilityUseCase, UserRepository userRepository) {
+                            ToggleVisibilityUseCase toggleVisibilityUseCase,
+                            DepositMoneyUseCase depositMoneyUseCase,
+                            UserRepository userRepository) {
         this.getBalanceUseCase = getBalanceUseCase;
         this.toggleVisibilityUseCase = toggleVisibilityUseCase;
+        this.depositMoneyUseCase = depositMoneyUseCase;
         this.userRepository = userRepository;
+    }
+
+    // Endpoint para recargar dinero.
+    @PostMapping("/deposit")
+    public ResponseEntity<ApiResponse<String>> deposit(
+            @AuthenticationPrincipal String email,
+            @RequestBody BigDecimal amount) {
+
+
+        UUID userId = getUserIdFromEmail(email);
+        depositMoneyUseCase.execute(userId, amount);
+
+        return ResponseEntity.ok(ApiResponse.success("Recarga realizada con éxito"));
     }
 
     @GetMapping("/balance")
@@ -50,6 +70,12 @@ public class WalletController {
         // Buscamos en la base de datos el UUID que corresponde a ese email
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("No se encontró el usuario para el email: " + email))
+                .getId();
+    }
+
+    private UUID getUserIdFromEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"))
                 .getId();
     }
 }
