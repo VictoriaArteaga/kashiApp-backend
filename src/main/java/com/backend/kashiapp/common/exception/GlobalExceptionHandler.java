@@ -109,7 +109,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
-    // Añadir el comentario.
     @ExceptionHandler(InvalidTransactionAmountException.class)
     public ResponseEntity<ErrorResponse>
     handleInvalidTransactionAmount(
@@ -128,7 +127,7 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    // Añadir comentario.
+
     @ExceptionHandler(InsufficientFundsException.class)
     public ResponseEntity<ErrorResponse>
     handleInsufficientFunds(
@@ -147,7 +146,7 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    // Añadir comentario.
+
     @ExceptionHandler(RecipientNotFoundException.class)
     public ResponseEntity<ErrorResponse>
     handleRecipientNotFound(
@@ -167,7 +166,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    // Añadir el coemntario.
     @ExceptionHandler(InvalidRecipientStateException.class)
     public ResponseEntity<ErrorResponse>
     handleInvalidRecipientState(
@@ -204,7 +202,6 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    // Añadir el comentario.
     @ExceptionHandler(SelfTransferNotAllowedException.class)
     public ResponseEntity<ErrorResponse>
     handleSelfTransfer(
@@ -220,6 +217,26 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
+    @ExceptionHandler(WalletNotFoundException.class)
+    public ResponseEntity<ErrorResponse>
+    handleWalletNotFound(
+            WalletNotFoundException ex
+    ) {
+
+        log.error("Wallet Error: {}", ex.getMessage());
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        OffsetDateTime.now()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
 }
