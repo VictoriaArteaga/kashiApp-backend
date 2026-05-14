@@ -1,33 +1,35 @@
 package com.backend.kashiapp.wallet.infraestructure.persistence;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Data
-@Entity
-@Table(name = "wallets")
 
+@Entity
+@Table(name = "Billeteras")
+@Getter
+@Setter
 public class WalletEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uuid")
     private UUID id;
 
-    @Column(name = "user_id", nullable = false, unique = true,
+    @Column(name = "usuario_id", nullable = false, unique = true,
             columnDefinition = "uuid")
     private UUID userId;
 
-    @Column(nullable = false, precision = 15, scale = 2)
+    @Column(name = "saldo",nullable = false, precision = 15, scale = 2)
     private BigDecimal balance;
 
-    @Column(nullable = false)
+    @Column(name = "es_visible",nullable = false)
     private boolean visible;
 
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMPTZ")
+    @Column(name = "actualizado_en", columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime updatedAt;
 
     @PrePersist

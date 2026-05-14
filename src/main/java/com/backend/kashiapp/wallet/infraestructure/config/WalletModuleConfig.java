@@ -3,6 +3,8 @@ package com.backend.kashiapp.wallet.infraestructure.config;
 import com.backend.kashiapp.wallet.application.mapper.WalletMapper;
 import com.backend.kashiapp.wallet.domain.models.Wallet;
 import com.backend.kashiapp.wallet.domain.repository.WalletRepository;
+import com.backend.kashiapp.wallet.domain.service.WalletService;
+import com.backend.kashiapp.wallet.domain.service.impl.WalletServiceImpl;
 import com.backend.kashiapp.wallet.infraestructure.persistence.JpaWalletRepository;
 import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
 import org.springframework.context.annotation.Bean;
@@ -31,5 +33,10 @@ public class WalletModuleConfig {
                 return WalletMapper.toDomain(saved);
             }
         };
+    }
+
+    @Bean
+    public WalletService walletService(WalletRepository walletRepository) {
+        return new WalletServiceImpl(walletRepository);
     }
 }
