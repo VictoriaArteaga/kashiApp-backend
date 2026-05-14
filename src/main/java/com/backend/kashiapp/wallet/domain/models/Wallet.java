@@ -1,12 +1,13 @@
 package com.backend.kashiapp.wallet.domain.models;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import lombok.Data;
-
-@Data
+@Getter
+@Setter
 public class Wallet {
     private UUID id;
     private UUID userId;
