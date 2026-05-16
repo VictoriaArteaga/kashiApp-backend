@@ -1,9 +1,11 @@
 package com.backend.kashiapp.transaction.presentation.controller;
 
 import com.backend.kashiapp.common.response.ApiResponse;
+import com.backend.kashiapp.transaction.application.dto.TransactionHistoryResponseDTO;
 import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
 import com.backend.kashiapp.transaction.application.dto.TransactionResponseDTO;
 import com.backend.kashiapp.transaction.application.useCase.ExecuteTransactionUseCase;
+import com.backend.kashiapp.transaction.application.useCase.GetTransactionHistoryUseCase;
 
 import jakarta.validation.Valid;
 
@@ -14,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/transactions")
@@ -22,6 +26,9 @@ public class TransactionController {
 
     private final ExecuteTransactionUseCase
             executeTransactionUseCase;
+
+    private final GetTransactionHistoryUseCase
+            getTransactionHistoryUseCase;
 
     // El email del emisor se extrae automáticamente del token JWT.
     @PostMapping("/transfer")
@@ -43,6 +50,25 @@ public class TransactionController {
                                 email,
                                 request
                         )
+                )
+        );
+    }
+
+    // Retorna el historial de movimientos del usuario autenticado.
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<List<TransactionHistoryResponseDTO>>> history(
+            @AuthenticationPrincipal String email
+    ) {
+
+        if (email == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .build();
+        }
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        getTransactionHistoryUseCase.execute(email)
                 )
         );
     }
