@@ -1,6 +1,8 @@
 package com.backend.kashiapp.transaction.application.mapper;
 
+import com.backend.kashiapp.transaction.application.dto.TransactionHistoryResponseDTO;
 import com.backend.kashiapp.transaction.domain.models.Transaction;
+import com.backend.kashiapp.transaction.domain.models.enums.TransactionType;
 import com.backend.kashiapp.transaction.infraestructure.persistence.TransactionEntity;
 
 import lombok.experimental.UtilityClass;
@@ -83,5 +85,19 @@ public class TransactionMapper {
         );
 
         return entity;
+    }
+
+    // Convierte el modelo de dominio al DTO de historial del usuario.
+    public static TransactionHistoryResponseDTO toHistoryDTO(Transaction transaction) {
+
+        // OUTGOING = el usuario envió; INCOMING = el usuario recibió
+        String type = transaction.getType() == TransactionType.OUTGOING ? "SENT" : "RECEIVED";
+
+        return TransactionHistoryResponseDTO.builder()
+                .transferReference(transaction.getTransferReference())
+                .type(type)
+                .amount(transaction.getAmount())
+                .date(transaction.getCreatedAt())
+                .build();
     }
 }
