@@ -1,6 +1,7 @@
 package com.backend.kashiapp.transaction.application.mapper;
 
 import com.backend.kashiapp.transaction.application.dto.TransactionHistoryResponseDTO;
+import com.backend.kashiapp.transaction.application.dto.TransactionHistoryType;
 import com.backend.kashiapp.transaction.domain.models.Transaction;
 import com.backend.kashiapp.transaction.domain.models.enums.TransactionType;
 import com.backend.kashiapp.transaction.infraestructure.persistence.TransactionEntity;
@@ -90,8 +91,9 @@ public class TransactionMapper {
     // Convierte el modelo de dominio al DTO de historial del usuario.
     public static TransactionHistoryResponseDTO toHistoryDTO(Transaction transaction) {
 
-        // OUTGOING = el usuario envió; INCOMING = el usuario recibió
-        String type = transaction.getType() == TransactionType.OUTGOING ? "SENT" : "RECEIVED";
+        TransactionHistoryType type = transaction.getType() == TransactionType.OUTGOING
+                ? TransactionHistoryType.SENT
+                : TransactionHistoryType.RECEIVED;
 
         return TransactionHistoryResponseDTO.builder()
                 .transferReference(transaction.getTransferReference())
