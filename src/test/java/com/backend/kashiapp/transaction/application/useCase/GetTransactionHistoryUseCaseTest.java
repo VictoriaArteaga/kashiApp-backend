@@ -11,6 +11,7 @@ import com.backend.kashiapp.transaction.domain.repository.TransactionRepository;
 import com.backend.kashiapp.wallet.application.dto.WalletResponseDTO;
 import com.backend.kashiapp.wallet.domain.service.WalletService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("GetTransactionHistoryUseCase")
 class GetTransactionHistoryUseCaseTest {
 
     private UserQueryPort userQueryPort;
@@ -65,6 +67,7 @@ class GetTransactionHistoryUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe devolver exactamente una transacción cuando hay una en el repositorio")
     void shouldReturnOneTransaction() {
         mockHappyPath();
         PagedResult<TransactionHistoryResponseDTO> result = useCase.execute(EMAIL, 0);
@@ -72,6 +75,7 @@ class GetTransactionHistoryUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe devolver el número de página correcto")
     void shouldReturnCorrectPageNumber() {
         mockHappyPath();
         PagedResult<TransactionHistoryResponseDTO> result = useCase.execute(EMAIL, 0);
@@ -79,6 +83,7 @@ class GetTransactionHistoryUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe devolver el total de páginas correcto")
     void shouldReturnCorrectTotalPages() {
         mockHappyPath();
         PagedResult<TransactionHistoryResponseDTO> result = useCase.execute(EMAIL, 0);
@@ -86,6 +91,7 @@ class GetTransactionHistoryUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe devolver el total de elementos correcto")
     void shouldReturnCorrectTotalElements() {
         mockHappyPath();
         PagedResult<TransactionHistoryResponseDTO> result = useCase.execute(EMAIL, 0);
@@ -93,12 +99,14 @@ class GetTransactionHistoryUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar UserNotFoundException si el email no corresponde a ningún usuario")
     void shouldThrowWhenUserNotFound() {
         when(userQueryPort.findUserIdByEmail(EMAIL)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, () -> useCase.execute(EMAIL, 0));
     }
 
     @Test
+    @DisplayName("Debe devolver contenido vacío cuando no hay transacciones")
     void shouldReturnEmptyContentWhenNoTransactions() {
         WalletResponseDTO wallet = new WalletResponseDTO();
         wallet.setId(WALLET_ID);
@@ -112,6 +120,7 @@ class GetTransactionHistoryUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe devolver cero elementos totales cuando no hay transacciones")
     void shouldReturnZeroTotalElementsWhenNoTransactions() {
         WalletResponseDTO wallet = new WalletResponseDTO();
         wallet.setId(WALLET_ID);

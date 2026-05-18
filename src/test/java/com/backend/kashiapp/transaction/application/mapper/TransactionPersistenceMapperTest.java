@@ -4,6 +4,7 @@ import com.backend.kashiapp.transaction.domain.models.Transaction;
 import com.backend.kashiapp.transaction.domain.models.enums.TransactionStatus;
 import com.backend.kashiapp.transaction.domain.models.enums.TransactionType;
 import com.backend.kashiapp.transaction.infraestructure.persistence.TransactionEntity;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("TransactionPersistenceMapper")
 class TransactionPersistenceMapperTest {
 
     private final UUID id = UUID.randomUUID();
@@ -22,6 +24,7 @@ class TransactionPersistenceMapperTest {
     private final OffsetDateTime createdAt = OffsetDateTime.now();
 
     @Test
+    @DisplayName("Debe mapear todos los campos de la entidad al dominio")
     void toDomain_shouldMapAllFields() {
         TransactionEntity entity = new TransactionEntity();
         entity.setId(id);
@@ -46,6 +49,7 @@ class TransactionPersistenceMapperTest {
     }
 
     @Test
+    @DisplayName("Debe mapear todos los campos del dominio a la entidad")
     void toEntity_shouldMapAllFields() {
         Transaction transaction = Transaction.builder()
                 .id(id)

@@ -3,6 +3,7 @@ package com.backend.kashiapp.transaction.infraestructure.adapter;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("UserQueryAdapter")
 class UserQueryAdapterTest {
 
     private UserRepository userRepository;
@@ -25,6 +27,7 @@ class UserQueryAdapterTest {
     }
 
     @Test
+    @DisplayName("Debe devolver el UUID del usuario cuando el email existe")
     void shouldReturnUserIdWhenEmailExists() {
         UUID expectedId = UUID.randomUUID();
         UserEntity entity = new UserEntity();
@@ -39,6 +42,7 @@ class UserQueryAdapterTest {
     }
 
     @Test
+    @DisplayName("Debe devolver Optional vacío cuando el email no existe")
     void shouldReturnEmptyWhenEmailNotFound() {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 

@@ -30,6 +30,7 @@ class TransactionMapperTest {
     }
 
     @Test
+    @DisplayName("Debe mapear la referencia de transferencia al DTO")
     void shouldMapTransferReference() {
         UUID ref = UUID.randomUUID();
         Transaction tx = Transaction.builder()
@@ -44,6 +45,7 @@ class TransactionMapperTest {
     }
 
     @Test
+    @DisplayName("Debe mapear el monto al DTO")
     void shouldMapAmount() {
         Transaction tx = Transaction.builder()
                 .transferReference(UUID.randomUUID())
@@ -57,6 +59,7 @@ class TransactionMapperTest {
     }
 
     @Test
+    @DisplayName("Debe mapear createdAt como fecha del DTO")
     void shouldMapCreatedAtToDate() {
         OffsetDateTime now = OffsetDateTime.now();
         Transaction tx = Transaction.builder()
@@ -130,12 +133,14 @@ class TransactionMapperTest {
     }
 
     @Test
+    @DisplayName("Debe mapear el tipo OUTGOING como SENT en el DTO")
     void shouldMapOutgoingTypeToSent() {
         TransactionHistoryResponseDTO dto = TransactionMapper.toHistoryDTO(buildTransaction(TransactionType.OUTGOING));
         assertEquals(TransactionHistoryType.SENT, dto.getType());
     }
 
     @Test
+    @DisplayName("Debe mapear el tipo INCOMING como RECEIVED en el DTO")
     void shouldMapIncomingTypeToReceived() {
         TransactionHistoryResponseDTO dto = TransactionMapper.toHistoryDTO(buildTransaction(TransactionType.INCOMING));
         assertEquals(TransactionHistoryType.RECEIVED, dto.getType());
