@@ -1,31 +1,15 @@
 package com.backend.kashiapp.transaction.application.mapper;
 
-import com.backend.kashiapp.transaction.application.dto.TransactionHistoryResponseDTO;
-import com.backend.kashiapp.transaction.application.dto.TransactionHistoryType;
 import com.backend.kashiapp.transaction.domain.models.Transaction;
-import com.backend.kashiapp.transaction.domain.models.enums.TransactionType;
 import com.backend.kashiapp.transaction.infraestructure.persistence.TransactionEntity;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class TransactionMapper {
-
-    public static TransactionHistoryResponseDTO toHistoryDTO(Transaction transaction) {
-
-        TransactionHistoryType type = transaction.getType() == TransactionType.OUTGOING
-                ? TransactionHistoryType.SENT
-                : TransactionHistoryType.RECEIVED;
-
-        return TransactionHistoryResponseDTO.builder()
-                .transferReference(transaction.getTransferReference())
-                .type(type)
-                .amount(transaction.getAmount())
-                .date(transaction.getCreatedAt())
-                .build();
-    }
+public class TransactionPersistenceMapper {
 
     public static Transaction toDomain(TransactionEntity entity) {
+
         return Transaction.builder()
                 .id(entity.getId())
                 .transferReference(entity.getTransferReference())
@@ -39,6 +23,7 @@ public class TransactionMapper {
     }
 
     public static TransactionEntity toEntity(Transaction transaction) {
+
         TransactionEntity entity = new TransactionEntity();
         entity.setId(transaction.getId());
         entity.setTransferReference(transaction.getTransferReference());

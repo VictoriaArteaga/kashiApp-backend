@@ -20,12 +20,14 @@ import com.backend.kashiapp.common.response.ApiResponse;
 import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
 import com.backend.kashiapp.transaction.application.dto.TransactionResponseDTO;
 import com.backend.kashiapp.transaction.application.useCase.ExecuteTransactionUseCase;
+import com.backend.kashiapp.transaction.application.useCase.GetTransactionHistoryUseCase;
 import com.backend.kashiapp.transaction.domain.models.enums.TransactionStatus;
 
 @DisplayName("TransactionController")
 class TransactionControllerTest {
 
     private ExecuteTransactionUseCase executeTransactionUseCase;
+    private GetTransactionHistoryUseCase getTransactionHistoryUseCase;
     private TransactionController controller;
 
     private final String senderEmail = "sender@example.com";
@@ -33,7 +35,8 @@ class TransactionControllerTest {
     @BeforeEach
     void setup() {
         executeTransactionUseCase = mock(ExecuteTransactionUseCase.class);
-        controller = new TransactionController(executeTransactionUseCase);
+        getTransactionHistoryUseCase = mock(GetTransactionHistoryUseCase.class);
+        controller = new TransactionController(executeTransactionUseCase, getTransactionHistoryUseCase);
     }
 
     // Construye una petición con valores válidos.
