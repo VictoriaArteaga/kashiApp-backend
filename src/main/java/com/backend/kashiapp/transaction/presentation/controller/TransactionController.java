@@ -1,6 +1,7 @@
 package com.backend.kashiapp.transaction.presentation.controller;
 
 import com.backend.kashiapp.common.response.ApiResponse;
+import com.backend.kashiapp.common.response.PagedResult;
 import com.backend.kashiapp.transaction.application.dto.TransactionHistoryResponseDTO;
 import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
 import com.backend.kashiapp.transaction.application.dto.TransactionResponseDTO;
@@ -15,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -54,10 +53,11 @@ public class TransactionController {
         );
     }
 
-    // Retorna el historial de movimientos del usuario autenticado.
+    // Retorna el historial de movimientos del usuario autenticado (15 por página).
     @GetMapping("/history")
-    public ResponseEntity<ApiResponse<List<TransactionHistoryResponseDTO>>> history(
-            @AuthenticationPrincipal String email
+    public ResponseEntity<ApiResponse<PagedResult<TransactionHistoryResponseDTO>>> history(
+            @AuthenticationPrincipal String email,
+            @RequestParam(defaultValue = "0") int page
     ) {
 
         if (email == null) {
@@ -68,7 +68,7 @@ public class TransactionController {
 
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        getTransactionHistoryUseCase.execute(email)
+                        getTransactionHistoryUseCase.execute(email, page)
                 )
         );
     }
