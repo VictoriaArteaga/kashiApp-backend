@@ -56,7 +56,7 @@ class GetTransactionHistoryUseCaseTest {
         return new PagedResult<>(List.of(tx), page, totalPages, totalElements);
     }
 
-    private void mockHappyPath() {
+    private void mockValidUserWithTransactions() {
         WalletResponseDTO wallet = new WalletResponseDTO();
         wallet.setId(WALLET_ID);
 
@@ -69,7 +69,7 @@ class GetTransactionHistoryUseCaseTest {
     @Test
     @DisplayName("Debe devolver exactamente una transacción cuando hay una en el repositorio")
     void shouldReturnOneTransaction() {
-        mockHappyPath();
+        mockValidUserWithTransactions();
         PagedResult<TransactionHistoryResponseDTO> result = useCase.execute(EMAIL, 0);
         assertEquals(1, result.getContent().size());
     }
@@ -77,7 +77,7 @@ class GetTransactionHistoryUseCaseTest {
     @Test
     @DisplayName("Debe devolver el número de página correcto")
     void shouldReturnCorrectPageNumber() {
-        mockHappyPath();
+        mockValidUserWithTransactions();
         PagedResult<TransactionHistoryResponseDTO> result = useCase.execute(EMAIL, 0);
         assertEquals(0, result.getPage());
     }
@@ -85,7 +85,7 @@ class GetTransactionHistoryUseCaseTest {
     @Test
     @DisplayName("Debe devolver el total de páginas correcto")
     void shouldReturnCorrectTotalPages() {
-        mockHappyPath();
+        mockValidUserWithTransactions();
         PagedResult<TransactionHistoryResponseDTO> result = useCase.execute(EMAIL, 0);
         assertEquals(1, result.getTotalPages());
     }
@@ -93,7 +93,7 @@ class GetTransactionHistoryUseCaseTest {
     @Test
     @DisplayName("Debe devolver el total de elementos correcto")
     void shouldReturnCorrectTotalElements() {
-        mockHappyPath();
+        mockValidUserWithTransactions();
         PagedResult<TransactionHistoryResponseDTO> result = useCase.execute(EMAIL, 0);
         assertEquals(1L, result.getTotalElements());
     }
@@ -120,7 +120,6 @@ class GetTransactionHistoryUseCaseTest {
     }
 
     @Test
-    @DisplayName("Debe devolver cero elementos totales cuando no hay transacciones")
     void shouldReturnZeroTotalElementsWhenNoTransactions() {
         WalletResponseDTO wallet = new WalletResponseDTO();
         wallet.setId(WALLET_ID);
