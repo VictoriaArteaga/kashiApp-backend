@@ -1,7 +1,7 @@
 package com.backend.kashiapp.transaction.infraestructure.persistence;
 
 import com.backend.kashiapp.common.response.PagedResult;
-import com.backend.kashiapp.transaction.application.mapper.TransactionMapper;
+import com.backend.kashiapp.transaction.application.mapper.TransactionPersistenceMapper;
 
 import com.backend.kashiapp.transaction.domain.models.Transaction;
 import com.backend.kashiapp.transaction.domain.models.enums.TransactionType;
@@ -34,7 +34,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         // Dominio -> Entidad -> Guardar -> Entidad guardada -> Dominio.
         TransactionEntity entity =
-                TransactionMapper.toEntity(
+                TransactionPersistenceMapper.toEntity(
                         transaction
                 );
 
@@ -43,7 +43,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                         entity
                 );
 
-        return TransactionMapper.toDomain(
+        return TransactionPersistenceMapper.toDomain(
                 saved
         );
     }
@@ -67,7 +67,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         List<Transaction> content = entityPage.getContent()
                 .stream()
-                .map(TransactionMapper::toDomain)
+                .map(TransactionPersistenceMapper::toDomain)
                 .toList();
 
         return new PagedResult<>(
