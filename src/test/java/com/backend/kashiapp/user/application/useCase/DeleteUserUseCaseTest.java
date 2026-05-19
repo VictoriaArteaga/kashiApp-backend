@@ -19,9 +19,9 @@ import com.backend.kashiapp.common.exception.InvalidCredentialsException;
 import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.application.dto.DeleteRequestDTO;
 import com.backend.kashiapp.user.application.dto.DeleteResponseDTO;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
 class DeleteUserUseCaseTest {
 
@@ -43,7 +43,7 @@ class DeleteUserUseCaseTest {
 
     @Test
     void shouldDeleteUserWithCorrectPassword() {
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setEmail(EMAIL);
         user.setPasswordHash(PASSWORD_HASH);
         user.setAccountStatus(AccountStatus.ACTIVE);
@@ -67,7 +67,7 @@ class DeleteUserUseCaseTest {
 
     @Test
     void shouldThrowExceptionWithWrongPassword() {
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setEmail(EMAIL);
         user.setPasswordHash(PASSWORD_HASH);
         user.setAccountStatus(AccountStatus.ACTIVE);
@@ -83,13 +83,13 @@ class DeleteUserUseCaseTest {
         //Se espera que se lance una excepción de credenciales inválidas
         Exception ex = assertThrows(InvalidCredentialsException.class, () -> deleteUserUseCase.deleteUser(request));
         assertEquals(AccountStatus.ACTIVE, user.getAccountStatus()); // Estado de cuenta: activo
-        assertEquals("La contraseña es incorrecta", ex.getMessage());
+        assertEquals("Contraseña incorrecta", ex.getMessage());
         verify(userRepository, never()).save(user); // Verificar que no se haya guardado el usuario
     }
 
     @Test
     void shouldThrowExceptionWhenAccountAlreadyDeleted() {
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setEmail(EMAIL);
         user.setPasswordHash(PASSWORD_HASH);
         user.setAccountStatus(AccountStatus.DELETED);
@@ -104,7 +104,7 @@ class DeleteUserUseCaseTest {
         //Se espera que se lance una excepción de cuenta eliminada
         Exception ex = assertThrows(AccountDeletedException.class, () -> deleteUserUseCase.deleteUser(request));
         assertEquals(AccountStatus.DELETED, user.getAccountStatus()); // Estado de cuenta: eliminado
-        assertEquals("La cuenta ya ha sido eliminada", ex.getMessage());
+        assertEquals("La cuenta ya ha sido eliminada previamente", ex.getMessage());
         verify(userRepository, never()).save(any()); // Verificar que no se guarde ningún usuario
     }
 

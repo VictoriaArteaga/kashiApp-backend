@@ -14,8 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.backend.kashiapp.common.exception.UserNotFoundException;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
 
 
@@ -33,7 +33,7 @@ class FailedAttemptServiceTest {
 
     @Test
     void shouldIncrementFailedAttempts() {
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setId(USER_ID);
         user.setFailedAttempts(2);
         user.setLockedUntil(null);
@@ -49,7 +49,7 @@ class FailedAttemptServiceTest {
 
     @Test
     void shouldLockAccountAfter5FailedAttempts(){
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setId(USER_ID);
         user.setFailedAttempts(4);
         user.setLockedUntil(null);

@@ -15,9 +15,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.backend.kashiapp.common.exception.UserNotFoundException;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
 class BlockUserUseCaseTest {
 
@@ -35,7 +35,7 @@ class BlockUserUseCaseTest {
 
     @Test
     void shouldBlockUserByEmail() {
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setEmail(EMAIL);
         user.setAccountStatus(AccountStatus.ACTIVE);
 

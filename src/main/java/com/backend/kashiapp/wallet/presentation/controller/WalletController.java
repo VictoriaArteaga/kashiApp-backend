@@ -6,8 +6,7 @@ import com.backend.kashiapp.wallet.application.dto.WalletResponseDTO;
 import com.backend.kashiapp.wallet.application.useCase.GetBalanceUseCase;
 import com.backend.kashiapp.wallet.application.useCase.ToggleVisibilityUseCase;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
-
+import com.backend.kashiapp.user.domain.models.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,7 +48,7 @@ public class WalletController {
 
     private UUID getUserIdFromToken(UserDetails userDetails) {
         String email = userDetails.getUsername();
-        UserEntity user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UserNotFoundException(
                 "User not found for email: " + email));
         return user.getId();

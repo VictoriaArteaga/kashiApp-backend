@@ -13,9 +13,9 @@ import static org.mockito.Mockito.when;
 
 import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.application.dto.UserProfileResponseDTO;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
 class GetUserUseCaseTest {
     private UserRepository userRepository;
@@ -35,13 +35,14 @@ class GetUserUseCaseTest {
         UUID userId = UUID.randomUUID();
         OffsetDateTime creationDate = OffsetDateTime.now();
 
-        UserEntity user = new UserEntity();
+        User user = new User ();
         user.setId(userId);
         user.setEmail(EMAIL);
         user.setUsername("testuser");
         user.setNumberPhone("3001234567");
         user.setAccountStatus(AccountStatus.ACTIVE);
         user.setCreationDate(creationDate);
+        
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
         UserProfileResponseDTO response = getUserUseCase.getCurrentUserProfile(EMAIL);

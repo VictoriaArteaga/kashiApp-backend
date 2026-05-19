@@ -13,10 +13,11 @@ import com.backend.kashiapp.common.exception.InvalidCredentialsException;
 import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.application.dto.AuthResponseDTO;
 import com.backend.kashiapp.user.application.dto.LoginRequestDTO;
-import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.Token2FARepository;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
+import com.backend.kashiapp.user.infraestructure.persistence.JpaUserRepository;
 import com.backend.kashiapp.user.infraestructure.persistence.Token2FAEntity;
+import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.user.infraestructure.security.EmailService;
 
 @Service
@@ -26,15 +27,17 @@ public class LoginUseCase {
     private final Token2FARepository token2FARepository;
     private final EmailService emailService;
     private final FailedAttemptService failedAttemptService;
+    private final JpaUserRepository jpaUserRepository;
 
     public LoginUseCase(UserRepository userRepository, PasswordEncoder passwordEncoder,
             Token2FARepository token2FARepository, EmailService emailService,
-            FailedAttemptService failedAttemptService) {
+            FailedAttemptService failedAttemptService, JpaUserRepository jpaUserRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.token2FARepository = token2FARepository;
         this.emailService = emailService;
         this.failedAttemptService = failedAttemptService;
+        this.jpaUserRepository = jpaUserRepository;
     }
 
     @Transactional
@@ -54,7 +57,7 @@ public class LoginUseCase {
             }
         }
         // Verificar si la cuenta ha sido eliminada
-        if (user.getAccountStatus() == AccountStatus.DELETED) {
+        if (user.isDeleted()) {
             throw new AccountDeletedException("La cuenta ha sido eliminada");
         }
 
@@ -75,7 +78,12 @@ public class LoginUseCase {
 
         // Crear una nueva entidad de token 2FA y guardarla en la base de datos
         var tokenEntity = new Token2FAEntity();
-        tokenEntity.setUser(user);
+        //Obtener el UserEntity inyectado por JPA 
+        UserEntity userEntity = jpaUserRepository.findById(user.getId()).orElseThrow(() 
+        -> new UserNotFoundException("Usuario no encontrado"));
+
+
+        tokenEntity.setUser(userEntity);
         tokenEntity.setToken(otp);
         tokenEntity.setExpirationTime(OffsetDateTime.now().plus(Duration.ofMinutes(10)));
         token2FARepository.save(tokenEntity);

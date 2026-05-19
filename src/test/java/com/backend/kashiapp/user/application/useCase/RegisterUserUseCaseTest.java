@@ -14,9 +14,9 @@ import com.backend.kashiapp.common.exception.EmailAlreadyExistsException;
 import com.backend.kashiapp.common.exception.PhoneNumberAlreadyExistsException;
 import com.backend.kashiapp.user.application.dto.UserRequestDTO;
 import com.backend.kashiapp.user.application.dto.UserResponseDTO;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.wallet.infraestructure.persistence.JpaWalletRepository;
 
 class RegisterUserUseCaseTest {
@@ -41,7 +41,7 @@ class RegisterUserUseCaseTest {
     void shouldRegisterUser() {
 
         //Simulación del guardado del usuario 
-        UserEntity savedUser = new UserEntity();
+        User savedUser = new User();
   
         savedUser.setId(java.util.UUID.randomUUID());
         savedUser.setEmail(EMAIL);
@@ -49,7 +49,7 @@ class RegisterUserUseCaseTest {
         savedUser.setNumberPhone(PHONE);
         savedUser.setAccountStatus(AccountStatus.ACTIVE);
         savedUser.setCreationDate(java.time.OffsetDateTime.now());
-        when(userRepository.save(any(UserEntity.class))).thenReturn(savedUser);
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         when(passwordEncoder.encode(PASSWORD)).thenReturn("encryptedPassword");
         when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
@@ -71,7 +71,7 @@ class RegisterUserUseCaseTest {
         assertEquals(AccountStatus.ACTIVE, response.getAccountStatus());
 
         //Se guarda el usuario en la base de datos con los datos correctos y se encripta la contraseña
-        verify(userRepository).save(any(UserEntity.class));
+        verify(userRepository).save(any(User.class));
         verify(passwordEncoder).encode(PASSWORD);
     }
 
