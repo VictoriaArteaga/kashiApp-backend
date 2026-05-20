@@ -1,34 +1,22 @@
-# =========================
-# Etapa de build
-# =========================
+# Etapa de compilación
 FROM maven:3.9.6-eclipse-temurin-17 AS build
-
 WORKDIR /app
 
-# Copiar pom.xml
-COPY pom.xml .
+# Limitar la memoria de la JVM para Maven
+ENV MAVEN_OPTS="-Xmx300m -XX:+UseSerialGC"
 
-# Descargar dependencias
+COPY pom.xml .
 RUN mvn dependency:go-offline
 
-# Copiar código fuente
 COPY src ./src
+# Usar el flag -B (Batch mode) para evitar logs excesivos que consuman memoria
+RUN mvn clean package -DskipTests -B
 
-# Compilar proyecto
-RUN mvn clean package -DskipTests
-
-# =========================
 # Etapa de ejecución
-# =========================
 FROM eclipse-temurin:17-jre-jammy
-
 WORKDIR /app
-
-# Copiar jar generado
 COPY --from=build /app/target/*.jar app.jar
-
-# Exponer puerto
 EXPOSE 8080
 
-# Ejecutar aplicación
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Limitar la memoria en tiempo de ejecución para que no pase de los 512MB de Render
+ENTRYPOINT ["java", "-Xmx350m", "-jar", "app.jar"]
