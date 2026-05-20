@@ -3,6 +3,7 @@ package com.backend.kashiapp.user.application.useCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -19,6 +20,7 @@ import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.wallet.infraestructure.persistence.JpaWalletRepository;
 
+@DisplayName("RegisterUserUseCase - TESTS")
 class RegisterUserUseCaseTest {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
@@ -38,6 +40,7 @@ class RegisterUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe registrar el usuario exitosamente")
     void shouldRegisterUser() {
 
         //Simulación del guardado del usuario 
@@ -76,6 +79,7 @@ class RegisterUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el email ya está registrado")
     void shouldThrowExceptionWhenEmailExists() {
         when(userRepository.existsByEmail(EMAIL)).thenReturn(true);
 
@@ -92,6 +96,7 @@ class RegisterUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el teléfono ya está registrado")
     void shouldThrowExceptionWhenPhoneExits() {
         when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
         when(userRepository.existsByNumberPhone(PHONE)).thenReturn(true);

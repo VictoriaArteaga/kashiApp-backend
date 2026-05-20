@@ -22,6 +22,8 @@ import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.user.infraestructure.persistence.Token2FAEntity;
 import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.user.infraestructure.security.JwtService;
+import org.junit.jupiter.api.DisplayName;
+@DisplayName("VerifyOptUseCase - TESTS")
 class VerifyOptUseCaseTest {
 
     private UserRepository userRepository;
@@ -47,6 +49,7 @@ class VerifyOptUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe retornar JWT cuando el OTP es correcto")
     void shouldReturnJwtWhenOtpIsCorrect() {
 
         UUID userId = UUID.randomUUID();
@@ -78,6 +81,7 @@ class VerifyOptUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el OTP es incorrecto")
     void shouldThrowExceptionWhenOtpIsIncorrect() {
 
         // El token en DB es diferente al ingresado por el usuario.
@@ -109,6 +113,7 @@ class VerifyOptUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el OTP ha expirado")
     void shouldThrowExceptionWhenOtpIsExpired() {
 
         // El token existe, pero expiró
@@ -141,6 +146,7 @@ class VerifyOptUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el usuario no existe")
     void shouldThrowExceptionWhenUserNotFound() {
 
         // Simulación si el correo no esta registrado en el sistema.

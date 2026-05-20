@@ -7,6 +7,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,6 +30,8 @@ import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.user.infraestructure.persistence.JpaUserRepository;
 import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.user.infraestructure.security.EmailService;
+
+@DisplayName("LoginUseCase - TESTS")
 class LoginUseCaseTest {
     private LoginUseCase loginUseCase;
     private UserRepository userRepository;
@@ -75,6 +78,7 @@ class LoginUseCaseTest {
 
 
     @Test
+    @DisplayName("Debe iniciar sesión exitosamente y enviar OTP")
     public void shouldLoginSuccessfully(){
         //Crear un usuario activo
         User user = buildUser();
@@ -102,6 +106,7 @@ class LoginUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción y registrar intento fallido cuando la contraseña es incorrecta")
     public void shouldFailLoginWithWrongPassword(){
         User user = buildUser();
         
@@ -120,6 +125,7 @@ class LoginUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el usuario no existe")
     public void shouldThrowExceptionWhenUserNotFound() {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
@@ -132,6 +138,7 @@ class LoginUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando la cuenta está eliminada")
     public void shouldThrowExceptionWhenAccountDeleted (){
         User user = buildUser();
         user.setAccountStatus(AccountStatus.DELETED);
@@ -147,6 +154,7 @@ class LoginUseCaseTest {
     }
 
     @Test 
+    @DisplayName("Debe lanzar excepción cuando la cuenta está bloqueada")
     public void shouldThrowExceptionWhenAccountIsLocked() {
         User user = buildUser();
         user.setLockedUntil(OffsetDateTime.now().plusMinutes(10));

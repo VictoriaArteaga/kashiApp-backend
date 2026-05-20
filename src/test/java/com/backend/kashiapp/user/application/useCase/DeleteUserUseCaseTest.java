@@ -6,6 +6,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -22,7 +23,7 @@ import com.backend.kashiapp.user.application.dto.DeleteResponseDTO;
 import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-
+@DisplayName("DeleteUserUseCase - TESTS")
 class DeleteUserUseCaseTest {
 
     private UserRepository userRepository;
@@ -42,6 +43,7 @@ class DeleteUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe eliminar la cuenta con contraseña correcta")
     void shouldDeleteUserWithCorrectPassword() {
         User user = new User();
         user.setEmail(EMAIL);
@@ -66,6 +68,7 @@ class DeleteUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando la contraseña es incorrecta")
     void shouldThrowExceptionWithWrongPassword() {
         User user = new User();
         user.setEmail(EMAIL);
@@ -88,6 +91,7 @@ class DeleteUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando la cuenta ya está eliminada")
     void shouldThrowExceptionWhenAccountAlreadyDeleted() {
         User user = new User();
         user.setEmail(EMAIL);
@@ -109,6 +113,7 @@ class DeleteUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el usuario no existe")
     void shouldThrowExceptionWhenUserNotFound() {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 

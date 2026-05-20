@@ -7,6 +7,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,7 @@ import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 
+@DisplayName("GetUserUseCase - TESTS")
 class GetUserUseCaseTest {
     private UserRepository userRepository;
     private GetUserUseCase getUserUseCase;
@@ -30,6 +32,7 @@ class GetUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe retornar el perfil del usuario cuando existe")
     void shouldReturnUserProfile() {
 
         UUID userId = UUID.randomUUID();
@@ -58,6 +61,7 @@ class GetUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el usuario no existe")
     void shouldThrowExceptionWhenUserNotFound() {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
