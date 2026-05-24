@@ -42,4 +42,4 @@ jwt:
     expiration: ${JWT_EXPIRATION:3600000}
 
 server:
-  port: ${PORT:8080}
+  port: ${PORT:10000}

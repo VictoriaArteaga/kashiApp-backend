@@ -16,7 +16,7 @@ RUN mvn clean package -DskipTests -B
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8080
+EXPOSE 10000
 
 # Limitar la memoria en tiempo de ejecución para que no pase de los 512MB de Render
 ENTRYPOINT ["java", "-Xmx350m", "-jar", "app.jar"]
