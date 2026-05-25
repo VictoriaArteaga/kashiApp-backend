@@ -19,4 +19,4 @@ COPY --from=build /app/target/*.jar app.jar
 EXPOSE 10000
 
 # Limitar la memoria en tiempo de ejecución para que no pase de los 512MB de Render
-ENTRYPOINT ["java", "-Xmx350m", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx350m","-Djava.net.preferIPv4Stack=true", "-jar", "app.jar"]
