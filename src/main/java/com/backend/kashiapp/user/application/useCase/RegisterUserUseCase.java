@@ -50,6 +50,7 @@ public class RegisterUserUseCase {
         user.setAccountStatus(AccountStatus.ACTIVE); 
         user.setIdentificationNumber(request.getIdentificationNumber());
         user.setCreationDate(OffsetDateTime.now());
+        user.setFailedAttempts(0);
 
         
         //guardar el usuario en la base de datos y capturar el usuario guardado para obtener su ID

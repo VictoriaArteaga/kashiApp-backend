@@ -56,12 +56,12 @@ public class LoginUseCase {
             } catch (Exception e) {
         
             }
+        }
         //Verificar si la cuenta esta bloqueada manualmente
         if (user.isBlocked()){
             throw new AccountBlockedException("La cuenta ha sido bloqueada temporalmente");
         }
-
-        }
+        
         // Verificar si la cuenta ha sido eliminada
         if (user.isDeleted()) {
             throw new AccountDeletedException("La cuenta ha sido eliminada");
