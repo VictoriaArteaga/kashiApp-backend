@@ -108,4 +108,127 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+    @ExceptionHandler(WalletNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleWalletNotFound(WalletNotFoundException ex) {
+    log.error("Wallet Error: {}", ex.getMessage());
+
+    ErrorResponse response = new ErrorResponse(
+        HttpStatus.NOT_FOUND.value(),
+        ex.getMessage(),
+        OffsetDateTime.now()
+    );
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+}
+
+    @ExceptionHandler(InvalidTransactionAmountException.class)
+    public ResponseEntity<ErrorResponse>
+    handleInvalidTransactionAmount(
+            InvalidTransactionAmountException ex
+    ) {
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        OffsetDateTime.now()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<ErrorResponse>
+    handleInsufficientFunds(
+            InsufficientFundsException ex
+    ) {
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        OffsetDateTime.now()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
+
+    @ExceptionHandler(RecipientNotFoundException.class)
+    public ResponseEntity<ErrorResponse>
+    handleRecipientNotFound(
+            RecipientNotFoundException ex
+    ) {
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        OffsetDateTime.now()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
+
+    @ExceptionHandler(InvalidRecipientStateException.class)
+    public ResponseEntity<ErrorResponse>
+    handleInvalidRecipientState(
+            InvalidRecipientStateException ex
+    ) {
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        HttpStatus.FORBIDDEN.value(),
+                        ex.getMessage(),
+                        OffsetDateTime.now()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(response);
+    }
+
+    @ExceptionHandler(TransactionStrategyNotFoundException.class)
+    public ResponseEntity<ErrorResponse>
+    handleTransactionStrategyNotFound(
+            TransactionStrategyNotFoundException ex
+    ) {
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        OffsetDateTime.now()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
+    @ExceptionHandler(SelfTransferNotAllowedException.class)
+    public ResponseEntity<ErrorResponse>
+    handleSelfTransfer(
+            SelfTransferNotAllowedException ex
+    ) {
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        OffsetDateTime.now()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
 }

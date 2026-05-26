@@ -36,6 +36,7 @@ class BlockUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe bloquear el usuario exitosamente")
     void shouldBlockUserByEmail() {
         User user = new User();
         user.setEmail(EMAIL);
@@ -53,6 +54,8 @@ class BlockUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el usuario no existe")
+
     void shouldThrowExceptionWhenUserNotFound() {
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());

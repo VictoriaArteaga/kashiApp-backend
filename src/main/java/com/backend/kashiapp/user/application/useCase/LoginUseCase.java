@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.kashiapp.common.exception.AccountBlockedException;
 import com.backend.kashiapp.common.exception.AccountDeletedException;
 import com.backend.kashiapp.common.exception.AccountLockedException;
 import com.backend.kashiapp.common.exception.InvalidCredentialsException;
@@ -55,6 +56,11 @@ public class LoginUseCase {
             } catch (Exception e) {
         
             }
+        //Verificar si la cuenta esta bloqueada manualmente
+        if (user.isBlocked()){
+            throw new AccountBlockedException("La cuenta ha sido bloqueada temporalmente");
+        }
+
         }
         // Verificar si la cuenta ha sido eliminada
         if (user.isDeleted()) {

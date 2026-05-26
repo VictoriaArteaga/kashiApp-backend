@@ -51,4 +51,8 @@ public class User {
         return this.accountStatus == AccountStatus.DELETED;
     }
 
+    public void unlock(){
+        this.accountStatus = AccountStatus.ACTIVE;
+    }
+
 }
