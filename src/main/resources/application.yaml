@@ -11,7 +11,7 @@ spring:
     password: ${DB_PASSWORD}
     baseline-on-migrate: true
     baseline-version: 1
-    enabled: true
+    enabled: false
     validate-on-migrate: false  
 
   jpa:
@@ -40,3 +40,6 @@ spring:
 jwt:
     secret: ${JWT_SECRET}
     expiration: ${JWT_EXPIRATION:3600000}
+
+server:
+  port: ${PORT:10000}
