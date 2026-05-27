@@ -16,11 +16,14 @@ import static org.mockito.Mockito.when;
 
 import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.application.dto.AuthResponseDTO;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.repository.Token2FARepository;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 import com.backend.kashiapp.user.infraestructure.persistence.Token2FAEntity;
 import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.user.infraestructure.security.JwtService;
+import org.junit.jupiter.api.DisplayName;
+@DisplayName("VerifyOptUseCase - TESTS")
 class VerifyOptUseCaseTest {
 
     private UserRepository userRepository;
@@ -46,16 +49,21 @@ class VerifyOptUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe retornar JWT cuando el OTP es correcto")
     void shouldReturnJwtWhenOtpIsCorrect() {
 
         UUID userId = UUID.randomUUID();
 
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setId(userId);
         user.setEmail(EMAIL);
 
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(EMAIL);
+
         Token2FAEntity token = new Token2FAEntity();
-        token.setUser(user);
+        token.setUser(userEntity);
         token.setToken(OTP);
         token.setExpirationTime(OffsetDateTime.now().plusMinutes(5));
 
@@ -73,17 +81,22 @@ class VerifyOptUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el OTP es incorrecto")
     void shouldThrowExceptionWhenOtpIsIncorrect() {
 
         // El token en DB es diferente al ingresado por el usuario.
         UUID userId = UUID.randomUUID();
 
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setId(userId);
         user.setEmail(EMAIL);
 
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(EMAIL);
+
         Token2FAEntity token = new Token2FAEntity();
-        token.setUser(user);
+        token.setUser(userEntity);
         token.setToken("654321");
         token.setExpirationTime(OffsetDateTime.now().plusMinutes(5));
 
@@ -100,18 +113,23 @@ class VerifyOptUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el OTP ha expirado")
     void shouldThrowExceptionWhenOtpIsExpired() {
 
         // El token existe, pero expiró
 
         UUID userId = UUID.randomUUID();
 
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setId(userId);
         user.setEmail(EMAIL);
 
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(userId);
+        userEntity.setEmail(EMAIL);
+
         Token2FAEntity token = new Token2FAEntity();
-        token.setUser(user);
+        token.setUser(userEntity);
         token.setToken(OTP);
         token.setExpirationTime(OffsetDateTime.now().minusMinutes(1)); // expirado.
 
@@ -128,6 +146,7 @@ class VerifyOptUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el usuario no existe")
     void shouldThrowExceptionWhenUserNotFound() {
 
         // Simulación si el correo no esta registrado en el sistema.

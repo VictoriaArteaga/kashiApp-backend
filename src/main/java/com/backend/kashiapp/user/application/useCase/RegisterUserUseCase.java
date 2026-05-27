@@ -1,7 +1,7 @@
 package com.backend.kashiapp.user.application.useCase;
 
-import java.time.OffsetDateTime;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,11 +11,11 @@ import com.backend.kashiapp.common.exception.EmailAlreadyExistsException;
 import com.backend.kashiapp.common.exception.PhoneNumberAlreadyExistsException;
 import com.backend.kashiapp.user.application.dto.UserRequestDTO;
 import com.backend.kashiapp.user.application.dto.UserResponseDTO;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
-import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
 import com.backend.kashiapp.wallet.infraestructure.persistence.JpaWalletRepository;
+import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
 
 
 @Service
@@ -42,7 +42,7 @@ public class RegisterUserUseCase {
         }
 
         //creacion del usuario
-        var user = new UserEntity();
+        var user = new User();
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setUsername(request.getUsername()); 
@@ -50,10 +50,11 @@ public class RegisterUserUseCase {
         user.setAccountStatus(AccountStatus.ACTIVE); 
         user.setIdentificationNumber(request.getIdentificationNumber());
         user.setCreationDate(OffsetDateTime.now());
+        user.setFailedAttempts(0);
 
         
         //guardar el usuario en la base de datos y capturar el usuario guardado para obtener su ID
-        UserEntity savedUser = userRepository.save(user);
+        var savedUser = userRepository.save(user);
         
 
         // Crear la wallet automáticamente con saldo 0 ← nuevo

@@ -32,22 +32,22 @@ public class VerifyOptUseCase {
         }
 
         //Buscar el token OTP
-        var tokenEntityOpt = token2FARepository.findByUserId(user.get().getId())
+        var tokenEntity = token2FARepository.findByUserId(user.get().getId())
             .orElseThrow(() -> new RuntimeException("Token OTP no encontrado para el usuario"));
 
         //Verificar si el token OTP no ha expirado
-        if (tokenEntityOpt.getExpirationTime().isBefore(java.time.OffsetDateTime.now())) {
-            token2FARepository.delete(tokenEntityOpt);
+        if (tokenEntity.getExpirationTime().isBefore(java.time.OffsetDateTime.now())) {
+            token2FARepository.delete(tokenEntity);
             throw new RuntimeException("Token OTP expirado");
         }
 
         //Verificar si el token OTP es correcto
-        if (!tokenEntityOpt.getToken().equals(otp)) {
+        if (!tokenEntity.getToken().equals(otp)) {
             throw new RuntimeException("Token OTP incorrecto");
         }
 
         //Eliminar el token y generar un token JWT para el usuario
-        token2FARepository.delete(tokenEntityOpt);
+        token2FARepository.delete(tokenEntity);
         String token = jwtService.generateToken(user.get().getEmail());
         return new AuthResponseDTO(token);
  

@@ -1,7 +1,7 @@
 package com.backend.kashiapp.integration;
 
 import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,8 +23,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 public class TransactionConcurrencyIntegrationTest extends BaseIntegrationTest {
 
-    private UserEntity sender;
-    private UserEntity receiver;
+    private User sender;
+    private User receiver;
     private String senderToken;
 
     private static final BigDecimal INITIAL_SENDER_BALANCE = new BigDecimal("1000.00");
@@ -142,7 +142,7 @@ public class TransactionConcurrencyIntegrationTest extends BaseIntegrationTest {
         List<String> userTokens = new ArrayList<>();
 
         for (int i = 0; i < numberOfUsers; i++) {
-            UserEntity u = persistActiveUser(
+            User u = persistActiveUser(
                     "user" + i + "@test.com", "user" + i, "1000000" + i, "ID-" + i);
             persistWallet(u.getId(), new BigDecimal("100.00"));
             userTokens.add(jwtService.generateToken(u.getEmail()));

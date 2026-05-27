@@ -16,9 +16,9 @@ import com.backend.kashiapp.transaction.domain.models.Transaction;
 import com.backend.kashiapp.transaction.domain.models.TransferCompletedEvent;
 import com.backend.kashiapp.transaction.domain.repository.TransactionRepository;
 
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
 import com.backend.kashiapp.wallet.application.dto.WalletResponseDTO;
 import com.backend.kashiapp.wallet.domain.service.WalletService;
@@ -71,7 +71,7 @@ public class TransferStrategy
     ) {
 
         // Validaciones previas a la transferencia.
-        UserEntity recipient = findRecipient(
+        User recipient = findRecipient(
                 request.getRecipientEmail()
         );
 
@@ -155,7 +155,7 @@ public class TransferStrategy
     }
 
     // Busca al destinatario por email o lanza excepción si no existe.
-    private UserEntity findRecipient(String email) {
+    private User findRecipient(String email) {
 
         return userRepository
                 .findByEmail(email)
@@ -180,7 +180,7 @@ public class TransferStrategy
 
     // Solo se puede transferir a cuentas con estado ACTIVE.
     private void validateRecipientStatus(
-            UserEntity recipient
+            User recipient
     ) {
 
         if (recipient.getAccountStatus()

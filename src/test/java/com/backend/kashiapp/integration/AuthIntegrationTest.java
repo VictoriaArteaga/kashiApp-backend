@@ -2,9 +2,9 @@ package com.backend.kashiapp.integration;
 
 import com.backend.kashiapp.user.application.dto.LoginRequestDTO;
 import com.backend.kashiapp.user.application.dto.VerifyOptRequestDTO;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.Token2FARepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.user.infraestructure.security.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +41,7 @@ public class AuthIntegrationTest extends BaseIntegrationTest {
     private static final String EMAIL = "auth_user@test.com";
     private static final String PASSWORD = "Password123!";
 
-    private UserEntity user;
+    private User user;
 
     @BeforeEach
     void setUp() {

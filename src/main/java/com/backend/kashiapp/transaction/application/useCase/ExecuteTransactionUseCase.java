@@ -4,8 +4,8 @@ import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
 import com.backend.kashiapp.transaction.application.dto.TransactionResponseDTO;
 import com.backend.kashiapp.transaction.domain.service.TransactionService;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +42,7 @@ public class ExecuteTransactionUseCase {
     // Convierte el email del usuario autenticado a su UUID.
     private UUID resolveUserId(String email) {
 
-        UserEntity user = userRepository
+        User user = userRepository
                 .findByEmail(email)
                 .orElseThrow(() ->
                         new UserNotFoundException(

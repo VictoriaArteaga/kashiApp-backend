@@ -1,7 +1,7 @@
 package com.backend.kashiapp.integration;
 
 import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
+import com.backend.kashiapp.user.domain.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,8 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Historial de transacciones: GET /api/v1/transactions/history")
 public class TransactionHistoryIntegrationTest extends BaseIntegrationTest {
 
-    private UserEntity sender;
-    private UserEntity receiver;
+    private User sender;
+    private User receiver;
     private String senderToken;
     private String receiverToken;
 

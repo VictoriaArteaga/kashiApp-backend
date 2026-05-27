@@ -2,7 +2,7 @@ package com.backend.kashiapp.integration;
 
 import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
 import com.backend.kashiapp.transaction.domain.repository.TransactionRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,8 +30,8 @@ public class TransactionRollbackIntegrationTest extends BaseIntegrationTest {
     @SpyBean
     private TransactionRepository domainTransactionRepository;
 
-    private UserEntity sender;
-    private UserEntity receiver;
+    private User sender;
+    private User receiver;
     private String senderToken;
 
     private static final BigDecimal SENDER_BALANCE = new BigDecimal("1000.00");

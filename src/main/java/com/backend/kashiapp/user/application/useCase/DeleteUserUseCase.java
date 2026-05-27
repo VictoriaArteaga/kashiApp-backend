@@ -8,7 +8,6 @@ import com.backend.kashiapp.common.exception.InvalidCredentialsException;
 import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.application.dto.DeleteRequestDTO;
 import com.backend.kashiapp.user.application.dto.DeleteResponseDTO;
-import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
 
 @Service
@@ -28,20 +27,17 @@ public class DeleteUserUseCase {
         orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
         //verificar que la cuenta no haya sido eliminada previamente
-        if (user.getAccountStatus() == AccountStatus.DELETED) {
-            throw new AccountDeletedException("La cuenta ya ha sido eliminada");
+        if (user.isDeleted()) {
+            throw new AccountDeletedException("La cuenta ya ha sido eliminada previamente");
+        }
+        if (!passwordEncoder.matches(deleteRequestDTO.getPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Contraseña incorrecta");
         }
 
-        //Validar contraseña
-        if (passwordEncoder.matches(deleteRequestDTO.getPassword(), user.getPasswordHash())) {
-            user.setAccountStatus(AccountStatus.DELETED);
-            userRepository.save(user);
-        } else {
-            throw new InvalidCredentialsException("La contraseña es incorrecta");
-        }
+        user.delete(); // Lógica para eliminar el usuario, actualizar el estado de cuenta a eliminado
+        userRepository.save(user); // Guardar los cambios en la base de datos después de eliminar
 
 
-        //Logica para eliminar el usuario, actualizar el estado de cuenta a eliminado 
         return new DeleteResponseDTO("Cuenta eliminada exitosamente");
     }
 

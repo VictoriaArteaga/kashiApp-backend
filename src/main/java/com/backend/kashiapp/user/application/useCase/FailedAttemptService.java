@@ -1,7 +1,5 @@
 package com.backend.kashiapp.user.application.useCase;
 
-import java.time.Duration;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -10,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
 @Service
 public class FailedAttemptService {
@@ -23,23 +20,21 @@ public class FailedAttemptService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void recordFailedAttempt(UUID userId) {
-        UserEntity user = userRepository.findById(userId)
+        var user = userRepository.findById(userId) 
             .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+        
+        //Incremenetar el contador de intentos fallidos
+        user.recordFailedAttempt();
+        userRepository.save(user); // Guardar los cambios en la base de datos después de registrar el intento fallido
 
-        user.setFailedAttempts(user.getFailedAttempts() + 1);
-        if (user.getFailedAttempts() >= 5) {
-            user.setLockedUntil(OffsetDateTime.now().plus(Duration.ofMinutes(15)));
-        }
-        userRepository.save(user);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void resetFailedAttempts(UUID userId) {
-        UserEntity user = userRepository.findById(userId)
+        var user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
-        user.setFailedAttempts(0);
-        user.setLockedUntil(null);
-        userRepository.save(user);
+        user.resetFailedAttempts();
+        userRepository.save(user); // Guardar los cambios en la base de datos después de rein
     }
 }
