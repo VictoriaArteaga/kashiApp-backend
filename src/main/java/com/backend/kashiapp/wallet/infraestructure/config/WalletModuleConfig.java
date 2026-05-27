@@ -10,6 +10,8 @@ import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +26,17 @@ public class WalletModuleConfig {
             public Optional<Wallet> findByUserId(UUID userId) {
                 return jpaRepo.findByUserId(userId)
                               .map(WalletMapper::toDomain);
+            }
+
+            @Override
+            public Optional<Wallet> findByUserIdForUpdate(UUID userId) {
+                return jpaRepo.findByUserIdForUpdate(userId)
+                              .map(WalletMapper::toDomain);
+            }
+
+            @Override
+            public int adjustBalance(UUID userId, BigDecimal amount) {
+                return jpaRepo.adjustBalance(userId, amount, OffsetDateTime.now());
             }
 
             @Override

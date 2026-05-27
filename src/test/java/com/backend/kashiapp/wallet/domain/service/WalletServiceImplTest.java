@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -120,58 +119,47 @@ class WalletServiceImplTest {
     @DisplayName("updateBalance")
     class UpdateBalance {
 
-        @Test
-        @DisplayName("Debe sumar un monto positivo al saldo existente")
-        void shouldAddPositiveAmountToBalance() {
-            Wallet wallet = buildWallet(new BigDecimal("200.00"), true);
+        // updateBalance ahora hace un ajuste atómico en BD (saldo = saldo + monto) para evitar
+        // race conditions, en vez de leer-modificar-guardar. La aritmética del saldo se verifica
+        // en los tests de integración (con BD real); aquí verificamos la delegación correcta.
 
-            when(walletRepository.findByUserId(userId)).thenReturn(Optional.of(wallet));
-            when(walletRepository.save(any(Wallet.class))).thenAnswer(inv -> inv.getArgument(0));
+        @Test
+        @DisplayName("Debe delegar en el ajuste atómico con un monto positivo")
+        void shouldAdjustBalanceWithPositiveAmount() {
+            when(walletRepository.adjustBalance(any(UUID.class), any(BigDecimal.class))).thenReturn(1);
 
             walletService.updateBalance(userId, new BigDecimal("50.00"));
 
-            ArgumentCaptor<Wallet> captor = ArgumentCaptor.forClass(Wallet.class);
-            verify(walletRepository).save(captor.capture());
-            assertThat(captor.getValue().getBalance()).isEqualByComparingTo("250.00");
+            verify(walletRepository).adjustBalance(userId, new BigDecimal("50.00"));
         }
 
         @Test
-        @DisplayName("Debe restar un monto negativo del saldo existente (débito)")
-        void shouldSubtractNegativeAmountFromBalance() {
-            Wallet wallet = buildWallet(new BigDecimal("200.00"), true);
-
-            when(walletRepository.findByUserId(userId)).thenReturn(Optional.of(wallet));
-            when(walletRepository.save(any(Wallet.class))).thenAnswer(inv -> inv.getArgument(0));
+        @DisplayName("Debe delegar en el ajuste atómico con un monto negativo (débito)")
+        void shouldAdjustBalanceWithNegativeAmount() {
+            when(walletRepository.adjustBalance(any(UUID.class), any(BigDecimal.class))).thenReturn(1);
 
             walletService.updateBalance(userId, new BigDecimal("-75.00"));
 
-            ArgumentCaptor<Wallet> captor = ArgumentCaptor.forClass(Wallet.class);
-            verify(walletRepository).save(captor.capture());
-            assertThat(captor.getValue().getBalance()).isEqualByComparingTo("125.00");
+            verify(walletRepository).adjustBalance(userId, new BigDecimal("-75.00"));
         }
 
         @Test
-        @DisplayName("Debe lanzar WalletNotFoundException cuando no existe billetera para el usuario")
+        @DisplayName("Debe lanzar WalletNotFoundException cuando el ajuste no afecta ninguna fila")
         void shouldThrowWhenWalletNotFound() {
-            when(walletRepository.findByUserId(userId)).thenReturn(Optional.empty());
+            when(walletRepository.adjustBalance(any(UUID.class), any(BigDecimal.class))).thenReturn(0);
 
             assertThrows(WalletNotFoundException.class,
                     () -> walletService.updateBalance(userId, new BigDecimal("100.00")));
-
-            verify(walletRepository, never()).save(any());
         }
 
         @Test
-        @DisplayName("Debe persistir la billetera después de actualizar el saldo")
-        void shouldSaveWalletAfterBalanceUpdate() {
-            Wallet wallet = buildWallet(new BigDecimal("100.00"), true);
-
-            when(walletRepository.findByUserId(userId)).thenReturn(Optional.of(wallet));
-            when(walletRepository.save(any(Wallet.class))).thenAnswer(inv -> inv.getArgument(0));
+        @DisplayName("Debe ejecutar el ajuste de saldo exactamente una vez")
+        void shouldAdjustBalanceExactlyOnce() {
+            when(walletRepository.adjustBalance(any(UUID.class), any(BigDecimal.class))).thenReturn(1);
 
             walletService.updateBalance(userId, new BigDecimal("10.00"));
 
-            verify(walletRepository, times(1)).save(any(Wallet.class));
+            verify(walletRepository, times(1)).adjustBalance(any(UUID.class), any(BigDecimal.class));
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.backend.kashiapp.transaction.domain.strategy;
 
+import com.backend.kashiapp.common.exception.DuplicateTransferException;
 import com.backend.kashiapp.common.exception.InsufficientFundsException;
 import com.backend.kashiapp.common.exception.InvalidRecipientStateException;
 import com.backend.kashiapp.common.exception.RecipientNotFoundException;
@@ -28,6 +29,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 // Estrategia encargada de ejecutar transferencias entre dos usuarios.
@@ -38,6 +41,12 @@ public class TransferStrategy
         implements TransactionStrategy {
 
     public static final String TYPE = "TRANSFER";
+
+    // Ventana de deduplicación: dos transferencias idénticas (mismo emisor, destinatario
+    // y monto) dentro de este lapso se consideran un duplicado por doble clic y se descartan.
+    // Es un compromiso ajustable: protege contra el doble clic, pero también impide repetir
+    // una transferencia idéntica legítima dentro de la ventana.
+    private static final Duration DUPLICATE_WINDOW = Duration.ofSeconds(10);
 
     private final WalletService walletService;
 
@@ -72,6 +81,12 @@ public class TransferStrategy
 
         validateRecipientStatus(recipient);
 
+        // Bloqueamos AMBAS billeteras (emisor y receptor) en orden consistente. Cumple dos fines:
+        // 1) serializa las transferencias del mismo emisor (p. ej. doble clic) para que la
+        //    verificación de duplicados de las peticiones siguientes vea ya la primera confirmada;
+        // 2) evita el interbloqueo entre transferencias inversas A->B y B->A simultáneas.
+        walletService.lockWalletsForUpdate(senderUserId, recipient.getId());
+
         // Obtenemos las billeteras de ambos usuarios.
         WalletResponseDTO senderWallet =
                 walletService.getWalletByUserId(
@@ -85,6 +100,14 @@ public class TransferStrategy
 
         validateSufficientFunds(
                 senderWallet, request
+        );
+
+        // Idempotencia: si ya se registró una transferencia idéntica reciente, la descartamos
+        // para no procesar el pago dos veces por un doble clic.
+        validateNotDuplicate(
+                senderWallet.getId(),
+                recipientWallet.getId(),
+                request
         );
 
         // Débito al emisor y crédito al receptor.
@@ -165,6 +188,30 @@ public class TransferStrategy
 
             throw new InvalidRecipientStateException(
                     "La cuenta del destinatario no está disponible"
+            );
+        }
+    }
+
+    // Rechaza una transferencia idéntica (mismo emisor, destinatario y monto) registrada
+    // dentro de la ventana de deduplicación: es el doble clic sobre "Enviar".
+    private void validateNotDuplicate(
+            UUID senderWalletId,
+            UUID recipientWalletId,
+            TransactionRequestDTO request
+    ) {
+
+        OffsetDateTime since = OffsetDateTime.now().minus(DUPLICATE_WINDOW);
+
+        boolean isDuplicate = transactionRepository.existsRecentDuplicateTransfer(
+                senderWalletId,
+                recipientWalletId,
+                request.getAmount(),
+                since
+        );
+
+        if (isDuplicate) {
+            throw new DuplicateTransferException(
+                    "Transferencia duplicada detectada. La operación ya fue procesada."
             );
         }
     }
