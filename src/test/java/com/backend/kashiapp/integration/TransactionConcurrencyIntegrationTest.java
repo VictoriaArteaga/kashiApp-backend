@@ -1,14 +1,15 @@
 package com.backend.kashiapp.integration;
 
-import com.backend.kashiapp.TestcontainersConfiguration;
-import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
-import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
-import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.security.JwtService;
-import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
-import com.backend.kashiapp.wallet.infraestructure.persistence.JpaWalletRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,19 +19,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+import com.backend.kashiapp.TestcontainersConfiguration;
+import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
+import com.backend.kashiapp.user.domain.models.User;
+import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
+import com.backend.kashiapp.user.domain.repository.UserRepository;
+import com.backend.kashiapp.user.infraestructure.persistence.JpaUserRepository;
+import com.backend.kashiapp.user.infraestructure.security.JwtService;
+import com.backend.kashiapp.wallet.infraestructure.persistence.JpaWalletRepository;
+import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -52,17 +52,20 @@ public class TransactionConcurrencyIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private UserEntity sender;
-    private UserEntity receiver;
+    @Autowired
+    private JpaUserRepository jpaUserRepository;
+
+    private User sender;
+    private User receiver;
     private String senderToken;
 
     @BeforeEach
     void setUp() {
         walletRepository.deleteAll();
-        userRepository.deleteAll();
+        jpaUserRepository.deleteAll();
 
         // 1. Crear Emisor
-        sender = new UserEntity();
+        sender = new User();
         sender.setEmail("concurrent_sender@test.com");
         sender.setPasswordHash("hash123");
         sender.setUsername("c_sender");
@@ -79,7 +82,7 @@ public class TransactionConcurrencyIntegrationTest {
         walletRepository.save(senderWallet);
 
         // 2. Crear Receptor
-        receiver = new UserEntity();
+        receiver = new User();
         receiver.setEmail("concurrent_receiver@test.com");
         receiver.setPasswordHash("hash123");
         receiver.setUsername("c_receiver");
@@ -173,7 +176,7 @@ public class TransactionConcurrencyIntegrationTest {
 
         // Creamos 5 usuarios extra, todos transferirán al receiver
         for (int i = 0; i < numberOfUsers; i++) {
-            UserEntity u = new UserEntity();
+            User u = new User();
             u.setEmail("user" + i + "@test.com");
             u.setPasswordHash("hash");
             u.setUsername("user" + i);
@@ -181,15 +184,15 @@ public class TransactionConcurrencyIntegrationTest {
             u.setAccountStatus(AccountStatus.ACTIVE);
             u.setIdentificationNumber("ID-" + i);
             u.setCreationDate(OffsetDateTime.now());
-            userRepository.save(u);
+            User savedUser = userRepository.save(u);
 
             WalletEntity w = new WalletEntity();
-            w.setUserId(u.getId());
+            w.setUserId(savedUser.getId());
             w.setBalance(new BigDecimal("100.00"));
             w.setVisible(true);
             walletRepository.save(w);
 
-            userTokens.add(jwtService.generateToken(u.getEmail()));
+            userTokens.add(jwtService.generateToken(savedUser.getEmail()));
         }
 
         TransactionRequestDTO request = new TransactionRequestDTO();

@@ -1,14 +1,9 @@
 package com.backend.kashiapp.integration;
 
-import com.backend.kashiapp.TestcontainersConfiguration;
-import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
-import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
-import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.security.JwtService;
-import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
-import com.backend.kashiapp.wallet.infraestructure.persistence.JpaWalletRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,16 +13,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.backend.kashiapp.TestcontainersConfiguration;
+import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
+import com.backend.kashiapp.user.domain.models.User;
+import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
+import com.backend.kashiapp.user.domain.repository.UserRepository;
+import com.backend.kashiapp.user.infraestructure.persistence.JpaUserRepository;
+import com.backend.kashiapp.user.infraestructure.security.JwtService;
+import com.backend.kashiapp.wallet.infraestructure.persistence.JpaWalletRepository;
+import com.backend.kashiapp.wallet.infraestructure.persistence.WalletEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -49,17 +49,20 @@ public class TransactionIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private UserEntity sender;
-    private UserEntity receiver;
+    @Autowired
+    private JpaUserRepository jpaUserRepository;
+
+    private User sender;
+    private User receiver;
     private String senderToken;
 
     @BeforeEach
     void setUp() {
         walletRepository.deleteAll();
-        userRepository.deleteAll();
+        jpaUserRepository.deleteAll();
 
         // 1. Crear Emisor
-        sender = new UserEntity();
+        sender = new User();
         sender.setEmail("sender@test.com");
         sender.setPasswordHash("hash123");
         sender.setUsername("sender_user");
@@ -76,7 +79,7 @@ public class TransactionIntegrationTest {
         walletRepository.save(senderWallet);
 
         // 2. Crear Receptor
-        receiver = new UserEntity();
+        receiver = new User();
         receiver.setEmail("receiver@test.com");
         receiver.setPasswordHash("hash123");
         receiver.setUsername("receiver_user");

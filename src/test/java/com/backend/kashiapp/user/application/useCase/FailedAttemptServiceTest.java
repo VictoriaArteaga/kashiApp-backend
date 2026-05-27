@@ -8,17 +8,17 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.backend.kashiapp.common.exception.UserNotFoundException;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
-
-
+@DisplayName("FailedAttemptService - TESTS")
 class FailedAttemptServiceTest {
     private FailedAttemptService failedAttemptService;
     private UserRepository userRepository;
@@ -32,8 +32,9 @@ class FailedAttemptServiceTest {
     }
 
     @Test
+    @DisplayName("Debe incrementar el contador de intentos fallidos")
     void shouldIncrementFailedAttempts() {
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setId(USER_ID);
         user.setFailedAttempts(2);
         user.setLockedUntil(null);
@@ -48,8 +49,9 @@ class FailedAttemptServiceTest {
     }
 
     @Test
+    @DisplayName("Debe bloquear la cuenta al llegar a 5 intentos fallidos")
     void shouldLockAccountAfter5FailedAttempts(){
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setId(USER_ID);
         user.setFailedAttempts(4);
         user.setLockedUntil(null);
@@ -65,6 +67,7 @@ class FailedAttemptServiceTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el usuario no existe")
     void shouldThrowExceptionWhenUserNotFound() {
         when(userRepository.findById(USER_ID)).thenReturn(java.util.Optional.empty());
     

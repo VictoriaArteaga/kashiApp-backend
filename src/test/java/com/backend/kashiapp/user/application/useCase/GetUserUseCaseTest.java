@@ -7,16 +7,18 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.backend.kashiapp.common.exception.UserNotFoundException;
 import com.backend.kashiapp.user.application.dto.UserProfileResponseDTO;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
+@DisplayName("GetUserUseCase - TESTS")
 class GetUserUseCaseTest {
     private UserRepository userRepository;
     private GetUserUseCase getUserUseCase;
@@ -30,18 +32,20 @@ class GetUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe retornar el perfil del usuario cuando existe")
     void shouldReturnUserProfile() {
 
         UUID userId = UUID.randomUUID();
         OffsetDateTime creationDate = OffsetDateTime.now();
 
-        UserEntity user = new UserEntity();
+        User user = new User ();
         user.setId(userId);
         user.setEmail(EMAIL);
         user.setUsername("testuser");
         user.setNumberPhone("3001234567");
         user.setAccountStatus(AccountStatus.ACTIVE);
         user.setCreationDate(creationDate);
+        
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
         UserProfileResponseDTO response = getUserUseCase.getCurrentUserProfile(EMAIL);
@@ -57,6 +61,7 @@ class GetUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el usuario no existe")
     void shouldThrowExceptionWhenUserNotFound() {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 

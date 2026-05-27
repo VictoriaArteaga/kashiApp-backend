@@ -19,8 +19,8 @@ import com.backend.kashiapp.transaction.application.dto.TransactionRequestDTO;
 import com.backend.kashiapp.transaction.application.dto.TransactionResponseDTO;
 import com.backend.kashiapp.transaction.domain.models.enums.TransactionStatus;
 import com.backend.kashiapp.transaction.domain.service.TransactionService;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
 @DisplayName("ExecuteTransactionUseCase")
 class ExecuteTransactionUseCaseTest {
@@ -48,8 +48,8 @@ class ExecuteTransactionUseCaseTest {
     }
 
     // Construye un usuario válido en estado ACTIVE.
-    private UserEntity buildSender() {
-        UserEntity sender = new UserEntity();
+    private User buildSender() {
+        User sender = new User();
         sender.setId(senderId);
         sender.setEmail(senderEmail);
         return sender;

@@ -1,7 +1,7 @@
 package com.backend.kashiapp.transaction.infraestructure.adapter;
 
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class UserQueryAdapterTest {
     @DisplayName("Debe devolver el UUID del usuario cuando el email existe")
     void shouldReturnUserIdWhenEmailExists() {
         UUID expectedId = UUID.randomUUID();
-        UserEntity entity = new UserEntity();
+        User entity = new User();
         entity.setId(expectedId);
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(entity));

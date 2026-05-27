@@ -36,9 +36,9 @@ import com.backend.kashiapp.transaction.domain.models.TransferCompletedEvent;
 import com.backend.kashiapp.transaction.domain.models.enums.TransactionStatus;
 import com.backend.kashiapp.transaction.domain.models.enums.TransactionType;
 import com.backend.kashiapp.transaction.domain.repository.TransactionRepository;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 import com.backend.kashiapp.wallet.application.dto.WalletResponseDTO;
 import com.backend.kashiapp.wallet.domain.service.WalletService;
 
@@ -74,8 +74,8 @@ class TransferStrategyTest {
     }
 
     // Construye un destinatario válido con el estado de cuenta indicado.
-    private UserEntity buildRecipient(AccountStatus status) {
-        UserEntity recipient = new UserEntity();
+    private User buildRecipient(AccountStatus status) {
+        User recipient = new User();
         recipient.setId(recipientId);
         recipient.setEmail(recipientEmail);
         recipient.setAccountStatus(status);
@@ -100,7 +100,7 @@ class TransferStrategyTest {
 
     // Prepara un escenario válido: destinatario ACTIVE y billeteras presentes en el wallet service.
     private void stubValidScenario(BigDecimal senderBalance) {
-        UserEntity recipient = buildRecipient(AccountStatus.ACTIVE);
+        User recipient = buildRecipient(AccountStatus.ACTIVE);
         WalletResponseDTO senderWallet = buildWallet(senderWalletId, senderBalance);
         WalletResponseDTO recipientWallet = buildWallet(recipientWalletId, BigDecimal.ZERO);
 
@@ -265,7 +265,7 @@ class TransferStrategyTest {
         void shouldThrowSelfTransferNotAllowedExceptionWhenSenderEqualsRecipient() {
 
             // Un usuario que intenta enviarse dinero a sí mismo debe ser rechazado antes de tocar el wallet.
-            UserEntity recipient = buildRecipient(AccountStatus.ACTIVE);
+            User recipient = buildRecipient(AccountStatus.ACTIVE);
             recipient.setId(senderId);
 
             when(userRepository.findByEmail(recipientEmail)).thenReturn(Optional.of(recipient));
@@ -288,7 +288,7 @@ class TransferStrategyTest {
         void shouldThrowInvalidRecipientStateExceptionForNonActiveAccounts(AccountStatus status) {
 
             // Solo las cuentas ACTIVE pueden recibir dinero: cualquier otro estado se rechaza.
-            UserEntity recipient = buildRecipient(status);
+            User recipient = buildRecipient(status);
             when(userRepository.findByEmail(recipientEmail)).thenReturn(Optional.of(recipient));
 
             InvalidRecipientStateException ex = assertThrows(
@@ -310,7 +310,7 @@ class TransferStrategyTest {
         @DisplayName("Debe lanzar InsufficientFundsException si el saldo es menor al monto")
         void shouldThrowInsufficientFundsExceptionWhenBalanceIsLowerThanAmount() {
             // Un saldo inferior al monto debe abortar la transferencia antes de tocar ninguna billetera.
-            UserEntity recipient = buildRecipient(AccountStatus.ACTIVE);
+            User recipient = buildRecipient(AccountStatus.ACTIVE);
             WalletResponseDTO senderWallet = buildWallet(senderWalletId, new BigDecimal("10.00"));
             WalletResponseDTO recipientWallet = buildWallet(recipientWalletId, BigDecimal.ZERO);
 

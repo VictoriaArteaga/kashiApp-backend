@@ -65,9 +65,7 @@ public class WalletController {
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new RuntimeException("Token de autenticación inválido o vacío");
         }
-        // Según el JwtAuthFilter, el principal es el Email (String)
         String email = (String) authentication.getPrincipal();
-        // Buscamos en la base de datos el UUID que corresponde a ese email
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("No se encontró el usuario para el email: " + email))
                 .getId();

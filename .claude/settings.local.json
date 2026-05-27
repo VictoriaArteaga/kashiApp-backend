@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\JUANES\\\\kashiApp-backend\\\\src\\\\main\\\\java\\\\com\\\\backend\\\\kashiapp\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(mvn test *)",
+      "Bash(./mvnw test *)"
+    ]
+  }
+}

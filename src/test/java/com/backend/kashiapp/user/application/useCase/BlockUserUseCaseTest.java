@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -15,10 +16,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.backend.kashiapp.common.exception.UserNotFoundException;
+import com.backend.kashiapp.user.domain.models.User;
 import com.backend.kashiapp.user.domain.models.enums.AccountStatus;
 import com.backend.kashiapp.user.domain.repository.UserRepository;
-import com.backend.kashiapp.user.infraestructure.persistence.UserEntity;
 
+@DisplayName("BlockUserUseCase - TESTS")
 class BlockUserUseCaseTest {
 
     private UserRepository userRepository;
@@ -34,8 +36,9 @@ class BlockUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe bloquear el usuario exitosamente")
     void shouldBlockUserByEmail() {
-        UserEntity user = new UserEntity();
+        User user = new User();
         user.setEmail(EMAIL);
         user.setAccountStatus(AccountStatus.ACTIVE);
 
@@ -51,6 +54,8 @@ class BlockUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe lanzar excepción cuando el usuario no existe")
+
     void shouldThrowExceptionWhenUserNotFound() {
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());

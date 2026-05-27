@@ -29,4 +29,19 @@ public class EmailService {
             throw new GlobalHeaderException("Error al enviar el correo: " + e.getMessage());
         }
     }
+
+    public void sendPasswordResetEmail(String toEmail, String token){
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(toEmail);
+            helper.setSubject("Tu token de restauracion");
+            helper.setText("Tu token de restauracion es: " + token, true);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new GlobalHeaderException("Error al enviar el correo: " + e.getMessage());
+        }
+    
+    }
+    
 }
