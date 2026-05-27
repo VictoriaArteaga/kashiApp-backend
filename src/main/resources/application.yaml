@@ -57,3 +57,4 @@ jwt:
 
 server:
   port: ${PORT:10000}
+  address: 0.0.0.0
