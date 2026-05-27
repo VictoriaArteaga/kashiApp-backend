@@ -11,7 +11,9 @@ spring:
       connection-timeout: 30000
       initialization-fail-timeout: -1
       maximum-pool-size: 3
-      minimum-idle: 1
+      minimum-idle: 0
+      idle-timeout: 300000
+      keepalive-time: 30000
 
   flyway:
     url: ${DB_URL}
@@ -32,6 +34,8 @@ spring:
           time_zone: UTC
         boot:
           allow_jdbc_metadata_access: false
+        temp:
+          use_jdbc_metadata_defaults: false
     show-sql: false
     open-in-view: false
 
