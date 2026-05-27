@@ -1,12 +1,17 @@
 spring:
+  main:
+    lazy-initialization: true
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      connection-timeout: 30000
+      connection-timeout: 10000
       initialization-fail-timeout: -1
+      maximum-pool-size: 3
+      minimum-idle: 1
 
   flyway:
     url: ${DB_URL}
@@ -15,7 +20,7 @@ spring:
     baseline-on-migrate: true
     baseline-version: 1
     enabled: false
-    validate-on-migrate: false  
+    validate-on-migrate: false
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -43,8 +48,8 @@ spring:
             enable: true
 
 jwt:
-    secret: ${JWT_SECRET}
-    expiration: ${JWT_EXPIRATION:3600000}
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:3600000}
 
 server:
   port: ${PORT:10000}
