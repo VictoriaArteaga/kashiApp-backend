@@ -41,10 +41,39 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional
+    public void lockWalletsForUpdate(UUID userIdA, UUID userIdB) {
+        // Ordenamos por UUID para tomar siempre los locks en el mismo orden global.
+        // Así dos transferencias inversas (A->B y B->A) concurrentes no pueden esperar
+        // cada una el lock que tiene la otra: se elimina el interbloqueo.
+        boolean aFirst = userIdA.compareTo(userIdB) <= 0;
+        UUID first = aFirst ? userIdA : userIdB;
+        UUID second = aFirst ? userIdB : userIdA;
+
+        lockWallet(first);
+        if (!second.equals(first)) {
+            lockWallet(second);
+        }
+    }
+
+    // Adquiere el bloqueo de fila (SELECT ... FOR UPDATE). El lock se mantiene hasta el commit
+    // de la transacción de la transferencia, serializando los envíos del mismo emisor para que
+    // la verificación de duplicados sea fiable.
+    private void lockWallet(UUID userId) {
+        walletRepository.findByUserIdForUpdate(userId)
+            .orElseThrow(() -> new WalletNotFoundException(
+                "No se encontró la billetera. Usuario: " + userId));
+    }
+
+    @Override
+    @Transactional
     public void updateBalance(UUID userId, BigDecimal amount) {
-        Wallet wallet = walletRepository.findByUserId(userId)
-            .orElseThrow(() -> new WalletNotFoundException("No se encontró la billetera para actualizar el saldo. Usuario: " + userId));
-        wallet.applyBalanceChange(amount);
-        walletRepository.save(wallet);
+        // Ajuste atómico del saldo (saldo = saldo + amount) en una sola sentencia UPDATE.
+        // Es inmune al lost update: dos transferencias concurrentes sobre la misma billetera
+        // se serializan a nivel de fila y ninguna pisa el cambio de la otra.
+        int updated = walletRepository.adjustBalance(userId, amount);
+        if (updated == 0) {
+            throw new WalletNotFoundException(
+                "No se encontró la billetera para actualizar el saldo. Usuario: " + userId);
+        }
     }
 }

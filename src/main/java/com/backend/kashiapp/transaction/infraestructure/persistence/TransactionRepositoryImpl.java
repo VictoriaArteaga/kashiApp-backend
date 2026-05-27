@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,6 +77,22 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 page,
                 entityPage.getTotalPages(),
                 entityPage.getTotalElements()
+        );
+    }
+
+    @Override
+    public boolean existsRecentDuplicateTransfer(
+            UUID senderWalletId,
+            UUID receiverWalletId,
+            BigDecimal amount,
+            OffsetDateTime since
+    ) {
+        return jpaTransactionRepository.existsRecentDuplicate(
+                senderWalletId,
+                receiverWalletId,
+                amount,
+                TransactionType.OUTGOING,
+                since
         );
     }
 }
